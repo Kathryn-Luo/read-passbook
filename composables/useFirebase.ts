@@ -5,7 +5,10 @@ import {
   onAuthStateChanged,
   getIdToken
 } from 'firebase/auth'
-
+import {
+  doc,
+  onSnapshot,
+} from 'firebase/firestore'
 
 export const createUser = async (email: any, password: any) => {
   const auth = getAuth();
@@ -119,14 +122,25 @@ export const updateUser = async (userInfo: any) => {
 
 /** 取得使用者資訊 By uid */
 export const getUserByUid = async (uid: string) => {
-  try {
-    const result = await $fetch('/api/user', {
-      method: 'get',
-      params: {
-        uid
-      }
+  function getUserDeatilByFirebaseOnSnapshot() {
+    return new Promise((resolve, reject) => {
+      const { $firestore } = useNuxtApp()
+
+      // FIXME: ts error: useNuxtApp 出來都是 unknow ?
+      // @ts-ignore
+      onSnapshot(doc($firestore, 'userDetail', uid), 
+      { includeMetadataChanges: true }, 
+      (doc) => {
+        if (doc.exists()) {
+          resolve(doc.data())
+        } else {
+          reject(doc)
+        }
+      });
     })
-    console.log('getUserByUid', result)
+  }
+  try {
+    const result = await getUserDeatilByFirebaseOnSnapshot()
     return result
   } catch (error) {
     throw createError({
