@@ -82,6 +82,9 @@ export const initUser = async () => {
 export const signOutUser = async () => {
   const auth = getAuth();
   const result = await auth.signOut();
+  const firebaseUser = useFirebaseUser()
+  firebaseUser.value = null
+  saveUserDetailInCookie(null)
   return result;
 };
 
@@ -151,7 +154,7 @@ export const getUserByUid = async (uid: string) => {
 }
 
 /** 儲存使用者資訊至 Cookie */
-export const saveUserDetailInCookie = async (userDetail: object) => {
+export const saveUserDetailInCookie = async (userDetail: object | null) => {
   const firebaseUserDetail = useFirebaseUserDetail()
   firebaseUserDetail.value = userDetail
   const userDetailCookie = useCookie('userDetailCookie')
