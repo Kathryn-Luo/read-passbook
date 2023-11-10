@@ -19,14 +19,12 @@ export const createUser = async (email: any, password: any) => {
   ).catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorCode, errorMessage)
+    return Promise.reject(error)
   });
   
-  console.log('credentials user', credentials?.user)
-  $fetch('/api/user', {
+  $fetch(`/api/user/${credentials?.user?.uid}`, {
     method: 'POST',
     body: {
-      uid: credentials?.user?.uid,
       email,
     }
   })
@@ -59,7 +57,8 @@ export const signInUser = async (email: any, password: any) => {
   return credentials;
 };
 
-export const initUser = async () => {
+export function initUser () {
+  return new Promise((resolve, reject) => {
   const auth = getAuth()
   const userCookie = useCookie('userCookie')
   const firebaseUser = useFirebaseUser()
@@ -72,9 +71,12 @@ export const initUser = async () => {
         method: "POST",
         body: { user },
       });
+        resolve(user)
     } else {
+        reject()
       //if signed out
     }
+  })
   })
 }
 
@@ -109,7 +111,7 @@ export const updateUser = async (userInfo: any) => {
   }
 
   try {
-    await $fetch('/api/user', {
+    await $fetch(`/api/user/${currentUser?.uid}`, {
       method: 'put',
       body: userInfo
     })
@@ -123,38 +125,31 @@ export const updateUser = async (userInfo: any) => {
 
 }
 
-/** 取得使用者資訊 By uid */
-export const getUserByUid = async (uid: string) => {
-  function getUserDeatilByFirebaseOnSnapshot() {
-    return new Promise((resolve, reject) => {
-      const { $firestore } = useNuxtApp()
 
-      // FIXME: ts error: useNuxtApp 出來都是 unknow ?
-      // @ts-ignore
-      onSnapshot(doc($firestore, 'userDetail', uid), 
-      { includeMetadataChanges: true }, 
-      (doc) => {
-        if (doc.exists()) {
-          resolve(doc.data())
-        } else {
-          reject(doc)
-        }
-      });
-    })
-  }
+/** 取得使用者資訊 By uid */
+export const getUserByUid = async (uid: string = '') => {
   try {
-    const result = await getUserDeatilByFirebaseOnSnapshot()
+    if (!uid) {
+      throw createError({
+        statusCode: 400,
+        message: '無使用者uid',
+      })
+    }
+    const result = await $fetch(`/api/user/${uid}`)
     return result
   } catch (error) {
     throw createError({
       statusCode: 400,
-      statusMessage: '取得使用者失敗',
+      message: '取得使用者失敗',
     })
   }
 }
 
+  }
+}
+
 /** 儲存使用者資訊至 Cookie */
-export const saveUserDetailInCookie = async (userDetail: object | null) => {
+export const saveUserDetailInCookie = async (userDetail: any) => {
   const firebaseUserDetail = useFirebaseUserDetail()
   firebaseUserDetail.value = userDetail
   const userDetailCookie = useCookie('userDetailCookie')
