@@ -34,10 +34,9 @@ const signin = async () => {
 }
 
 const register = async () => {
-  $q.loading.show()
-  console.log(registerForm.value.email, registerForm.value.password );
   try {
     await createUser(registerForm.value.email, registerForm.value.password);
+    await signInUser(registerForm.value.email, registerForm.value.password)
     $q.notify({
       type: 'positive',
       message: '註冊成功'
@@ -49,7 +48,7 @@ const register = async () => {
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: '登入失敗'
+      message: '註冊失敗'
     })
   } finally {
     $q.loading.hide()
