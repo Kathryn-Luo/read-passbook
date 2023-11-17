@@ -7,5 +7,7 @@
 </script>
 
 <template>
-  <h3 class="mb-2 px-2 text-lg bg-cyan-600/[.8] text-white rounded">{{ title }}</h3>
+  <h3 class="mb-2 px-2 flex justify-between items-center text-lg bg-cyan-600/[.8] text-white rounded">
+    <span>{{ title }}</span>
+  </h3>
 </template>

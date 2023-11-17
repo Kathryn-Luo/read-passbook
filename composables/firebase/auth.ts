@@ -17,8 +17,6 @@ export const createUser = async (email: any, password: any) => {
     email,
     password
   ).catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
     return Promise.reject(error)
   });
   
@@ -59,24 +57,55 @@ export const signInUser = async (email: any, password: any) => {
 
 export function initUser () {
   return new Promise((resolve, reject) => {
-  const auth = getAuth()
-  const userCookie = useCookie('userCookie')
-  const firebaseUser = useFirebaseUser()
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      userCookie.value = JSON.stringify(user)
-      firebaseUser.value = user
-
-      $fetch("/api/auth", {
-        method: "POST",
-        body: { user },
-      });
+    const auth = getAuth()
+    const userCookie = useCookie('userCookie')
+    const firebaseUser = useFirebaseUser()
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userCookie.value = JSON.stringify(user)
+        firebaseUser.value = user
+  
+        $fetch("/api/auth", {
+          method: "POST",
+          body: { user },
+        });
         resolve(user)
-    } else {
+      } else {
         reject()
-      //if signed out
-    }
+        //if signed out
+      }
+    })
   })
+}
+
+export const initUserDetail = async (uid: string) => {
+  const firebaseUserDetail = useFirebaseUserDetail()
+  const userDetailCookie = useCookie('userDetailCookie')
+  if (userDetailCookie.value) {
+    firebaseUserDetail.value = userDetailCookie.value
+  }
+
+  const userDetail = await getUserByUid(uid)
+  saveUserDetailInCookie(userDetail)
+  return userDetail
+}
+
+export function getUserDetailWaitFirebaseLoaded () {
+  return new Promise((resolve, reject) => {
+    const auth = getAuth()
+    const user = auth.currentUser
+    if (user) {
+      resolve(user)
+    } else {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          resolve(user)
+        } else {
+          reject()
+        }
+      })
+    }
+
   })
 }
 
@@ -99,14 +128,14 @@ export const updateUser = async (userInfo: any) => {
     console.error('無當前使用者資訊')
     throw createError({
       statusCode: 400,
-      statusMessage: '無當前使用者資訊',
+      message: '無當前使用者資訊',
     })
   }
   if (userInfo?.uid !== currentUser?.uid) {
     console.error('非當前使用者操作')
     throw createError({
       statusCode: 400,
-      statusMessage: '非當前使用者操作',
+      message: '非當前使用者操作',
     })
   }
 
@@ -125,6 +154,22 @@ export const updateUser = async (userInfo: any) => {
 
 }
 
+// function getDataFromFirestoreOnSnapshot (...docParams: string[]): object {
+//   return new Promise ((resolve, reject) => {
+//     const { $firestore } = useNuxtApp()
+//     // FIXME: ts error: useNuxtApp 出來都是 unknow ?
+//     // @ts-ignore
+//     const unsubscribe = onSnapshot(doc($firestore, ...docParams), 
+//       { includeMetadataChanges: true }, 
+//       (doc) => {
+//         if (doc.exists()) {
+//           resolve(doc.data())
+//         } else {
+//           reject(doc)
+//         }
+//       });
+//   })
+// }
 
 /** 取得使用者資訊 By uid */
 export const getUserByUid = async (uid: string = '') => {
@@ -145,6 +190,13 @@ export const getUserByUid = async (uid: string = '') => {
   }
 }
 
+export const getUserByAccount = async (account: string) => {
+  if (!account) return
+  try {
+    const userDeatil = await $fetch(`/api/user/account/${account}`)
+    return userDeatil
+  } catch (error) {
+  
   }
 }
 

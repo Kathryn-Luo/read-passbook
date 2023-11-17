@@ -1,3 +1,4 @@
 export default defineNuxtPlugin(async () => {
-  await initUser();
+  const user: any = await initUser();
+  const userDetail = await initUserDetail(user?.uid)
 })
