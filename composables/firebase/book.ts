@@ -70,7 +70,7 @@ export const addUserReadBooks = async (userId: string, books: object[]) => {
       const docRef = doc(collection(firebaseDB, 'userReadBooks'));
       const bookData = {
         bookId: book?.id,
-        title: book?.title,
+        title: book?.volumeInfo?.title,
         userId: userId,
         startDateTime: Timestamp.fromDate(new Date()),
       }

@@ -1,11 +1,7 @@
 <script setup>
 defineProps({
   id: String,
-  title: String,
-  imageLinks: Object,
-  authors: Array,
-  publisher: String,
-  publishedDate: String
+  volumeInfo: Object
 })
 const selection = defineModel()
 
@@ -22,16 +18,16 @@ const selection = defineModel()
       class=" flex-none"
       >
       <NuxtImg
-        v-if="imageLinks?.smallThumbnail"
-        :src="imageLinks?.smallThumbnail"
+        v-if="volumeInfo?.imageLinks?.smallThumbnail"
+        :src="volumeInfo?.imageLinks?.smallThumbnail"
         fit="contain"
         />
     </div>
     <div class="flex-1">
-      <p class=" text-black text-sm">{{ title }}</p>
-      <p v-if="authors?.length">作者：{{ authors.join(', ') }}</p>
-      <p v-if="publisher">出版社：{{ publisher }}</p>
-      <p v-if="publishedDate">出版日期：{{ publishedDate }}</p>
+      <p class=" text-black text-sm">{{ volumeInfo?.title }}</p>
+      <p v-if="volumeInfo?.authors?.length">作者：{{ volumeInfo?.authors.join(', ') }}</p>
+      <p v-if="volumeInfo?.publisher">出版社：{{ volumeInfo?.publisher }}</p>
+      <p v-if="volumeInfo?.publishedDate">出版日期：{{ volumeInfo?.publishedDate }}</p>
     </div>
     <div class="flex-none">
       <q-checkbox v-model="selection" :val="id" color="teal" />

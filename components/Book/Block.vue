@@ -62,7 +62,7 @@ const deleteBook = (book) => {
       >
       <q-icon name="las la-book" class="flex-none pr-2" />
       <nuxt-link
-        :to="{ name: 'book-ID', params: { ID: book.bookId } }"
+        :to="{ name: 'book-bookId', params: { bookId: book.bookId } }"
         class=" text-base text-cyan-900 leading-5 flex-1 hover:underline"
         >
         {{ book.title }}

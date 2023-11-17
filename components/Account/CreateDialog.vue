@@ -11,7 +11,7 @@
   const getBookListFromResult = (result) => {
     return result.map(book => ({
       id: book.id,
-      ...book.volumeInfo
+      ...book,
     }))
   }
   const search = async () => {
@@ -38,7 +38,7 @@
     const selectedBooksIds = selectedBooks.map(book => book.id)
     const { data: addBooksResult } = await useAsyncData(`addBook:[${selectedBooksIds.join(', ')}]`,
       async () => {
-        const result = await addBooks (books)
+        const result = await addBooks(selectedBooks)
         return result
       })
 
