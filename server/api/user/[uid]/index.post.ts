@@ -1,6 +1,6 @@
 import {
   firestoreDb
-} from '../lib/firebase'
+} from '../../../lib/firebase'
 
 import {
   setDoc,
@@ -8,13 +8,15 @@ import {
 } from 'firebase/firestore'
 
 export default defineEventHandler(async (event) => {
+  const uid = getRouterParam(event, 'uid')
+
   const body = await readBody(event)
   const config = useRuntimeConfig()
 
   try {
-    
     const newUserInfo = { ...body }
-    const usersCollectionRef = doc(firestoreDb, 'userDetail', newUserInfo.uid)
+    // @ts-ignore
+    const usersCollectionRef = doc(firestoreDb, 'userDetail', uid)
 
     const result = await setDoc(usersCollectionRef, {
       ...config.public.defaultUserDetail,

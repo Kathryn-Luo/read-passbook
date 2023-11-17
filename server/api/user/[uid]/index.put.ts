@@ -1,6 +1,6 @@
 import {
   firestoreDb
-} from '../lib/firebase'
+} from '../../../lib/firebase'
 
 import {
   doc,
@@ -8,14 +8,14 @@ import {
 } from 'firebase/firestore'
 
 
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
   try {
     const updateUserInfo = { ...body }
+    // FIXME
+    // @ts-ignore
     const usersCollectionRef = doc(firestoreDb, 'userDetail', updateUserInfo.uid)
-
     const result = await updateDoc(usersCollectionRef, updateUserInfo)
 
     return result

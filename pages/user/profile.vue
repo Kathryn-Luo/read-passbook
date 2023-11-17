@@ -1,6 +1,3 @@
-<script>
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-</script>
 <script setup>
 definePageMeta({
   middleware: ['auth'],
@@ -9,24 +6,10 @@ const config = useRuntimeConfig()
 const submitLoading = ref(false)
 const $q = useQuasar()
 
+const firebaseUser = useFirebaseUser()
 const firebaseUserDetail = useFirebaseUserDetail()
 const firebaseUserDetailRef = ref(firebaseUserDetail)
 const userInfo = ref(config.public.defaultUserDetail)
-
-function getUserDetailWaitFirebaseLoaded () {
-  return new Promise((resolve, reject) => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      resolve(user)
-    } else {
-      onAuthStateChanged(auth, async (user) => {
-        resolve(user)
-      })
-    }
-
-  })
-}
 
 const { pending } = await useAsyncData('myUserDetail', async () => {
   if (firebaseUserDetailRef.value) {
@@ -36,7 +19,7 @@ const { pending } = await useAsyncData('myUserDetail', async () => {
 
   try {
     const firebaseUserData = await getUserDetailWaitFirebaseLoaded()
-    const userDetail = await getUserByUid(firebaseUserData.uid)
+    const userDetail = await getUserByUid(firebaseUserData?.uid)
     saveUserDetailInCookie(userDetail)
     userInfo.value = JSON.parse(JSON.stringify(userDetail))
 
@@ -53,7 +36,7 @@ const submit = async () => {
   try {
     submitLoading.value = true
     await updateUser({
-      uid: userInfo.value.uid,
+      uid: firebaseUser.value.uid,
       account: userInfo.value.account,
       nickName: userInfo.value.nickName
     })

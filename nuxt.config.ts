@@ -59,7 +59,8 @@ export default defineNuxtConfig({
   quasar: {
     plugins: [
       'Notify',
-      'Loading'
+      'Loading',
+      'Dialog'
     ],
     extras: {
       fontIcons: [

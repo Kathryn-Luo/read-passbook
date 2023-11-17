@@ -1,5 +1,6 @@
 <script setup>
 const firebaseUser = useFirebaseUser();
+const firebaseUserDetail = useFirebaseUserDetail();
 const clickSignOut = async () => {
   await signOutUser()
 }
@@ -16,26 +17,38 @@ const clickSignOut = async () => {
           />
         <q-space />
         <q-tabs>
-          <q-route-tab
-            v-if="firebaseUser"
-            name="profile"
-            label="Profile"
-            :to="{
-              name: 'user-profile'
-            }"
-            />
-          <q-tab
-            v-if="firebaseUser"
-            name="SignOut"
-            label="SignOut"
-            @click="clickSignOut"
-            />
-          <q-route-tab
-            v-else
-            name="Login"
-            label="Login"
-            to="/login"
-            />
+          <ClientOnly>
+            <q-route-tab
+              name="read-list"
+              label="Read Passbook"
+              :to="{
+                name: 'user-account',
+                params: {
+                  account: firebaseUserDetail?.account
+                }
+              }"
+              />
+            <q-route-tab
+              v-if="firebaseUser"
+              name="profile"
+              label="Profile"
+              :to="{
+                name: 'user-profile'
+              }"
+              />
+            <q-tab
+              v-if="firebaseUser"
+              name="SignOut"
+              label="SignOut"
+              @click="clickSignOut"
+              />
+            <q-route-tab
+              v-else
+              name="Login"
+              label="Login"
+              to="/login"
+              />
+          </ClientOnly>
         </q-tabs>
       </q-toolbar>
     </div>  
