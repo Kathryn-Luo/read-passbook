@@ -17,8 +17,9 @@ const emit = defineEmits([
   'deleteBook'
 ])
 
-const getDateFormat = (Timestamp) => {
-  const newDateTime = Timestamp.toDate()
+const getDateFormat = (timestamp) => {
+  if (!timestamp) return ''
+  const newDateTime = timestamp.toDate()
   let dateFormat = 'MM/DD'
   if (newDateTime.getFullYear() !== new Date().getFullYear()) {
     // 不同年份再顯示年
@@ -36,8 +37,16 @@ const toggleStatus = (book) => {
 const deleteBook = (book) => {
   $q.dialog({
     title: '刪除閱讀紀錄',
-    message: `請確認是否刪除「${book.title}」此本書籍的閱讀紀錄？`,
-    cancel: true,
+    message: `是否刪除「<span class="text-amber-700 font-bold">${book.title}</span>」此本書籍的閱讀紀錄？`,
+    html: true,
+    ok: {
+      label: '刪除',
+      color: 'negative',
+    },
+    cancel: {
+      label: '取消',
+      flat: true
+    }
   }).onOk(() => {
     emit('deleteBook', book)
   })
@@ -62,7 +71,7 @@ const deleteBook = (book) => {
       >
       <q-icon name="las la-book" class="flex-none pr-2" />
       <nuxt-link
-        :to="{ name: 'book-ID', params: { ID: book.bookId } }"
+        :to="{ name: 'book-bookId', params: { bookId: book.bookId } }"
         class=" text-base text-cyan-900 leading-5 flex-1 hover:underline"
         >
         {{ book.title }}

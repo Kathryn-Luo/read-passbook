@@ -8,10 +8,15 @@
   
   const bookList = ref([])
 
+  const clearSearch = () => {
+    selection.value.length = 0
+    searchText.value = null
+    bookList.value.length = 0
+  }
   const getBookListFromResult = (result) => {
     return result.map(book => ({
       id: book.id,
-      ...book.volumeInfo
+      ...book,
     }))
   }
   const search = async () => {
@@ -38,7 +43,7 @@
     const selectedBooksIds = selectedBooks.map(book => book.id)
     const { data: addBooksResult } = await useAsyncData(`addBook:[${selectedBooksIds.join(', ')}]`,
       async () => {
-        const result = await addBooks (books)
+        const result = await addBooks(selectedBooks)
         return result
       })
 
@@ -49,6 +54,7 @@
     })
 
     dialogOpen.value = false
+    clearSearch()
     emit('submit')
   }
 
@@ -66,6 +72,7 @@
           ref="searchInputRef"
           v-model="searchText"
           @keypress.enter="search"
+          type="search"
           autofocus
           outlined
           placeholder="請輸入搜尋文字（書名、作者、ISBN）"

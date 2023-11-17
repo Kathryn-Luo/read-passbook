@@ -7,6 +7,15 @@ const { data: userDetail, pending } = await useAsyncData(`userDetail:${account}`
   const currentUserDeatil = await getUserByAccount(account)
   return currentUserDeatil
 })
+
+useSeoMeta({
+  title: () => `${userDetail.value?.nickName}的閱讀紀錄`,
+  ogTitle: () => `${userDetail.value?.nickName}的閱讀紀錄`,
+  // description: () => bookDetail.value?.volumeInfo.description,
+  // ogDescription: () => bookDetail.value?.volumeInfo.description,
+  ogImage: () => userDetail.value?.image || '',
+})
+
 const firebaseAuthUser = await getUserDetailWaitFirebaseLoaded()
 const isAuthor = userDetail?.value?.uid === firebaseAuthUser?.uid
 
