@@ -1,6 +1,5 @@
 import {
   collection,
-  addDoc,
   Timestamp,
   setDoc,
   doc,
@@ -11,13 +10,17 @@ import {
   getDoc,
   getDocs,
   deleteDoc,
-  updateDoc
 } from 'firebase/firestore'
 
 
 
-export const getBook = async (is: string) => {
-
+export const getBook = async (bookId: string) => {
+  try {
+    const bookDetail = await $fetch(`/api/book/${bookId}`)
+    return bookDetail
+  } catch (error) {
+    return error
+  }
 }
 
 export const updateBook = async (id: string, book: object) => {
