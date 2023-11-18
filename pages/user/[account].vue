@@ -17,10 +17,10 @@ useSeoMeta({
 })
 
 const firebaseAuthUser = await getUserDetailWaitFirebaseLoaded()
-const isAuthor = userDetail?.value?.uid === firebaseAuthUser?.uid
+const isAuthor = firebaseAuthUser && (userDetail?.value?.uid === firebaseAuthUser?.uid)
 
 const { data: booksData, refresh: userReadBookRefresh } = await useAsyncData(`getUserReadBooks:${account}`, async () => {
-  const result = await getUserReadBooks(firebaseAuthUser?.uid)
+  const result = await getUserReadBooks(userDetail?.value?.uid)
   const readingBooks = []
   const readDoneBooks = []
   result.forEach(book => {
@@ -35,6 +35,7 @@ const { data: booksData, refresh: userReadBookRefresh } = await useAsyncData(`ge
     readDoneBooks
   }
 }, {
+  server: false,
   transform(input) {
     return {
       ...input,
@@ -175,6 +176,7 @@ const createNewRecord = () => {
       @toggleStatus="readDone"
       @deleteBook="deleteBook"
       title="閱讀中"
+      :canControl="isAuthor"
       />
     <BookBlock
       v-if="booksData?.readDoneBooks?.length"
@@ -183,6 +185,7 @@ const createNewRecord = () => {
       @deleteBook="deleteBook"
       title="閱讀紀錄"
       class=" mt-5"
+      :canControl="isAuthor"
       />
     <AccountCreateDialog
       v-model="dialogOpen"
