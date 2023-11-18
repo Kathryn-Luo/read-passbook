@@ -60,7 +60,7 @@ export const addBooks = async (books: object[]) => {
   return result
 }
 
-export const addUserReadBooks = async (userId: string, books: object[]) => {
+export const addUserReadBooks = async (userId: string, books: object[], userDetail: any) => {
   const nuxtApp = useNuxtApp()
   const firebaseDB = nuxtApp.$firestore
   try {
@@ -74,8 +74,12 @@ export const addUserReadBooks = async (userId: string, books: object[]) => {
       const bookData = {
         bookId: book?.id,
         title: book?.volumeInfo?.title,
-        userId: userId,
+        imageLinks: book?.volumeInfo?.imageLinks,
+        authors: book?.volumeInfo?.authors,
+        publisher: book?.volumeInfo?.publisher,
         startDateTime: Timestamp.fromDate(new Date()),
+        userId: userId,
+        userDetail: userDetail
       }
       batch.set(docRef, bookData)
     })
