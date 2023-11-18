@@ -40,14 +40,14 @@ export const addBook = async (book: object) => {
   
 }
 
-export const addBooks = async (books: object[]) => {
+export const addBooks = async (books: any[]) => {
   const nuxtApp = useNuxtApp()
   const firebaseDB = nuxtApp.$firestore
   // Get a new write batch
   // FIXME
   // @ts-ignore
   const batch = writeBatch(firebaseDB)
-
+  
   books.forEach(book => {
     // FIXME
     // @ts-ignore
@@ -102,7 +102,7 @@ export const getUserReadBooks = async (userId: string) => {
   try {
     // FIXME
     // @ts-ignore
-    const q = query(userReadBooksRef, where('userId', '==', userId), orderBy('startDateTime'));
+    const q = query(userReadBooksRef, where('userId', '==', userId), orderBy('startDateTime', 'desc'));
     const querySnapshot = await getDocs(q)
     const userReadBooksList: any[] = []
     querySnapshot.forEach((doc) => {
