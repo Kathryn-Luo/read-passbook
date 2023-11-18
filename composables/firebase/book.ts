@@ -40,14 +40,14 @@ export const addBook = async (book: object) => {
   
 }
 
-export const addBooks = async (books: object[]) => {
+export const addBooks = async (books: any[]) => {
   const nuxtApp = useNuxtApp()
   const firebaseDB = nuxtApp.$firestore
   // Get a new write batch
   // FIXME
   // @ts-ignore
   const batch = writeBatch(firebaseDB)
-
+  
   books.forEach(book => {
     // FIXME
     // @ts-ignore
@@ -60,7 +60,7 @@ export const addBooks = async (books: object[]) => {
   return result
 }
 
-export const addUserReadBooks = async (userId: string, books: object[]) => {
+export const addUserReadBooks = async (userId: string, books: object[], userDetail: any) => {
   const nuxtApp = useNuxtApp()
   const firebaseDB = nuxtApp.$firestore
   try {
@@ -74,8 +74,12 @@ export const addUserReadBooks = async (userId: string, books: object[]) => {
       const bookData = {
         bookId: book?.id,
         title: book?.volumeInfo?.title,
-        userId: userId,
+        imageLinks: book?.volumeInfo?.imageLinks,
+        authors: book?.volumeInfo?.authors,
+        publisher: book?.volumeInfo?.publisher,
         startDateTime: Timestamp.fromDate(new Date()),
+        userId: userId,
+        userDetail: userDetail
       }
       batch.set(docRef, bookData)
     })
@@ -98,7 +102,7 @@ export const getUserReadBooks = async (userId: string) => {
   try {
     // FIXME
     // @ts-ignore
-    const q = query(userReadBooksRef, where('userId', '==', userId), orderBy('startDateTime'));
+    const q = query(userReadBooksRef, where('userId', '==', userId), orderBy('startDateTime', 'desc'));
     const querySnapshot = await getDocs(q)
     const userReadBooksList: any[] = []
     querySnapshot.forEach((doc) => {
@@ -153,4 +157,25 @@ export const deleteUserReadBook = async (readBookId: string) => {
   await deleteDoc(userReadBookDoc)
 }
 
-
+export const getRecentlyUserReadBooks = async () => {
+  const nuxtApp = useNuxtApp()
+  const firebaseDB = nuxtApp.$firestore
+  try {
+    // FIXME
+    // @ts-ignore
+    const userReadBooksRef = collection(firebaseDB, 'userReadBooks')
+    const q = query(userReadBooksRef, orderBy('startDateTime', 'desc'));
+    const querySnapshot = await getDocs(q)
+    const userReadBooksList: any[] = []
+    querySnapshot.forEach((doc) => {
+      userReadBooksList.push({
+        id: doc.id,
+        ...doc.data()
+      })
+    })
+    return userReadBooksList
+  } catch (error) {
+    console.log('getRecentlyUserReadBooks error', error)
+    return error
+  }
+}

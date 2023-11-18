@@ -48,8 +48,10 @@
       })
 
     const firebaseUser = useFirebaseUser()
+    const userDetailCookie = useCookie('userDetailCookie')
+
     const { data } = await useAsyncData(`addUserReadBooks:${firebaseUser.value.uid}:${selectedBooksIds.join(', ')}`, async () => {
-      const result = await addUserReadBooks(firebaseUser.value.uid, selectedBooks)
+      const result = await addUserReadBooks(firebaseUser.value.uid, selectedBooks, userDetailCookie.value)
       return result
     })
 

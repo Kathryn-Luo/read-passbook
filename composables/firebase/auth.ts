@@ -101,7 +101,7 @@ export function getUserDetailWaitFirebaseLoaded () {
         if (user) {
           resolve(user)
         } else {
-          reject()
+          resolve(null)
         }
       })
     }

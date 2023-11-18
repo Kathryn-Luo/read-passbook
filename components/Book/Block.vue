@@ -8,9 +8,11 @@ const $q = useQuasar()
 const {
   title,
   bookList,
+  canControl
 } = defineProps({
   title: String,
   bookList: Array,
+  canControl: Boolean
 })
 const emit = defineEmits([
   'toggleStatus',
@@ -32,9 +34,11 @@ const isDone = (book) => {
   return book.endDateTime
 }
 const toggleStatus = (book) => {
+  if (!canControl) return
   emit('toggleStatus', book)
 }
 const deleteBook = (book) => {
+  if (!canControl) return
   $q.dialog({
     title: '刪除閱讀紀錄',
     message: `是否刪除「<span class="text-amber-700 font-bold">${book.title}</span>」此本書籍的閱讀紀錄？`,
@@ -80,7 +84,7 @@ const deleteBook = (book) => {
         class=" flex-none ml-2">
         {{ getDateFormat(book.startDateTime) }}
       </span>
-      <div class=" pl-2">
+      <div class=" pl-2" v-if="canControl">
         <q-btn
           @click="() => toggleStatus(book)"
           :icon="`las ${isDone(book) ? 'la-undo' : 'la-check-circle'}`"

@@ -19,6 +19,7 @@ const clickSignOut = async () => {
         <q-tabs>
           <ClientOnly>
             <q-route-tab
+              v-if="firebaseUser"
               name="read-list"
               label="Read Passbook"
               :to="{
