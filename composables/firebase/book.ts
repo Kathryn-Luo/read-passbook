@@ -157,4 +157,25 @@ export const deleteUserReadBook = async (readBookId: string) => {
   await deleteDoc(userReadBookDoc)
 }
 
-
+export const getRecentlyUserReadBooks = async () => {
+  const nuxtApp = useNuxtApp()
+  const firebaseDB = nuxtApp.$firestore
+  try {
+    // FIXME
+    // @ts-ignore
+    const userReadBooksRef = collection(firebaseDB, 'userReadBooks')
+    const q = query(userReadBooksRef, orderBy('startDateTime', 'desc'));
+    const querySnapshot = await getDocs(q)
+    const userReadBooksList: any[] = []
+    querySnapshot.forEach((doc) => {
+      userReadBooksList.push({
+        id: doc.id,
+        ...doc.data()
+      })
+    })
+    return userReadBooksList
+  } catch (error) {
+    console.log('getRecentlyUserReadBooks error', error)
+    return error
+  }
+}
