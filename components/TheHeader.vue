@@ -1,8 +1,25 @@
 <script setup>
+import {
+  useQuasar
+} from 'quasar'
 const firebaseUser = useFirebaseUser();
 const firebaseUserDetail = useFirebaseUserDetail();
+const $q = useQuasar()
 const clickSignOut = async () => {
+  $q.dialog({
+    title: '確認登出',
+    message: '是否登出帳號',
+    html: true,
+    ok: {
+      label: '登出',
+    },
+    cancel: {
+      label: '取消',
+      flat: true
+    }
+  }).onOk(async () => {
   await signOutUser()
+  })
 }
 </script>
 
