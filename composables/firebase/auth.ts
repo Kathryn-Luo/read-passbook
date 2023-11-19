@@ -116,6 +116,8 @@ export const signOutUser = async () => {
   const firebaseUser = useFirebaseUser()
   firebaseUser.value = null
   saveUserDetailInCookie(null)
+  const router = useRouter()
+  router.replace({ name: 'login' })
   return result;
 };
 
