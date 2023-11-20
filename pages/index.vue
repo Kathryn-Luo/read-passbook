@@ -67,7 +67,7 @@
         </div>
       </nuxt-link>
       <div
-        v-if="book.userDetail"
+        v-if="book.userDetail && book.userDetail.displayName"
         class="group/user mt-2 border-t border-double "
         >
         <nuxt-link
