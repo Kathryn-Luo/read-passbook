@@ -20,10 +20,16 @@ export const createUser = async (email: any, password: any) => {
     return Promise.reject(error)
   });
   
+  if (!credentials?.user?.uid) {
+    // 無使用者ID
+    throw new Error('無使用者ID')
+  }
   $fetch(`/api/user/${credentials?.user?.uid}`, {
     method: 'POST',
     body: {
       email,
+      account: credentials?.user?.uid,
+      uid: credentials?.user?.uid
     }
   })
   return credentials;
@@ -116,6 +122,8 @@ export const signOutUser = async () => {
   const firebaseUser = useFirebaseUser()
   firebaseUser.value = null
   saveUserDetailInCookie(null)
+  const router = useRouter()
+  router.replace({ name: 'login' })
   return result;
 };
 

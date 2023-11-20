@@ -86,10 +86,10 @@ const submit = async () => {
       ref="formRef"
       class=" px-6 table w-full"
       >
-      <ProfileField
+      <!-- <ProfileField
         v-model="userInfo.account"
         label="帳號"
-        />
+        /> -->
       <ProfileField
         v-model="userInfo.nickName"
         label="暱稱"
