@@ -18,13 +18,13 @@ const clickSignOut = async () => {
       flat: true
     }
   }).onOk(async () => {
-  await signOutUser()
+    await signOutUser()
   })
 }
 </script>
 
 <template>
-  <q-header elevated class=" bg-cyan-700">
+  <q-header elevated class=" sticky top-0 bg-cyan-700">
     <div class="container mx-auto">
       <q-toolbar>
         <q-btn
@@ -33,12 +33,12 @@ const clickSignOut = async () => {
           to="/"
           />
         <q-space />
-        <q-tabs>
+        <q-tabs inline-label>
           <ClientOnly>
             <q-route-tab
               v-if="firebaseUser"
               name="read-list"
-              label="Read Passbook"
+              label="閱讀紀錄"
               :to="{
                 name: 'user-account',
                 params: {
@@ -46,20 +46,28 @@ const clickSignOut = async () => {
                 }
               }"
               />
-            <q-route-tab
+            <q-btn-dropdown
               v-if="firebaseUser"
-              name="profile"
-              label="Profile"
-              :to="{
-                name: 'user-profile'
-              }"
-              />
-            <q-tab
-              v-if="firebaseUser"
-              name="SignOut"
-              label="SignOut"
-              @click="clickSignOut"
-              />
+              auto-close
+              stretch
+              flat
+              :label="firebaseUserDetail?.displayName"
+              icon="person"
+              >
+              <q-list>
+                <q-item
+                  clickable
+                  :to="{
+                    name: 'user-profile'
+                  }"
+                  >
+                  <q-item-section>個人檔案</q-item-section>
+                </q-item>
+                <q-item clickable @click="clickSignOut">
+                  <q-item-section>登出</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
             <q-route-tab
               v-else
               name="Login"
