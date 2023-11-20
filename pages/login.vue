@@ -7,8 +7,11 @@ const $q = useQuasar()
 const tab = ref('login')
 
 const signinForm = ref({ email: '', password: '' });
-const registerForm = ref({ email: '', password: '' });
-const registerMessage = ref('')
+const registerForm = ref({
+  email: '',
+  password: '',
+  confirmPassword: '',
+});
 
 const signin = async () => {
   $q.loading.show()
@@ -35,7 +38,7 @@ const signin = async () => {
 
 const register = async () => {
   try {
-    await createUser(registerForm.value.email, registerForm.value.password);
+    await createUser(registerForm.value.email, registerForm.value.password)
     await signInUser(registerForm.value.email, registerForm.value.password)
     $q.notify({
       type: 'positive',
@@ -68,19 +71,15 @@ const register = async () => {
 
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="login">
-        <AuthFirebase
-          title="登入"
+        <LoginPanel
           :form="signinForm"
-          @submit="signin"
+          @signin="signin"
           />
       </q-tab-panel>
-
       <q-tab-panel name="register">
-        <AuthFirebase
-          title="註冊"
+        <LoginRegisterPanel
           :form="registerForm"
-          :message="registerMessage"
-          @submit="register"
+          @register="register"
           />
       </q-tab-panel>
     </q-tab-panels>
