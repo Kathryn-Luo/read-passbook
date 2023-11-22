@@ -57,6 +57,34 @@ const register = async () => {
     $q.loading.hide()
   }
 }
+
+const forgetPassword = async (email: string) => {
+  try {
+    const result = await authForgetPassword(email)
+    $q.notify({
+      type: 'positive',
+      message: '電子郵件發送成功，請至電子信箱查看',
+      timeout: 30 * 1000
+    })
+
+  } catch (error: any) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage)
+    let notifyMessage = '註冊失敗'
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        notifyMessage = '此電子郵件已註冊過'
+        break;
+      default:
+        break;
+    }
+    $q.notify({
+      type: 'negative',
+      message: notifyMessage
+    })
+  }
+}
 </script>
 
 <template>
@@ -74,6 +102,7 @@ const register = async () => {
         <LoginPanel
           :form="signinForm"
           @signin="signin"
+          @forgetPassword="forgetPassword"
           />
       </q-tab-panel>
       <q-tab-panel name="register">

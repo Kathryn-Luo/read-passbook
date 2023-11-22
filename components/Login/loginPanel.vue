@@ -2,7 +2,13 @@
 const props = defineProps({
   form: Object,
 })
-const emit = defineEmits(['signin'])
+const emit = defineEmits([
+  'signin',
+  'forgetPassword'
+])
+
+const forgetPasswordOpen = ref(false)
+const forgetPasswordEmail = ref(null)
 
 const isPwd = ref(true)
 
@@ -14,6 +20,13 @@ const submit = async () => {
   if (validation) {
     emit('signin', form)
   }
+}
+const forgetPassword = async => {
+  forgetPasswordOpen.value = true
+}
+
+const forgetPasswordSubmit = async () => {
+  emit('forgetPassword', forgetPasswordEmail.value)
 }
 </script>
 
@@ -65,6 +78,13 @@ const submit = async () => {
       class="mt-5"
       flat
       color="primary"
-      label="忘記密碼" />
+      label="忘記密碼"
+      @click="forgetPassword"
+      />
   </div>
+  <loginForgetPassword
+    v-model="forgetPasswordOpen"
+    v-model:email="forgetPasswordEmail"
+    @submit="forgetPasswordSubmit"
+    />
 </template>

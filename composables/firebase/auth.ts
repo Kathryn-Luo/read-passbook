@@ -3,7 +3,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  getIdToken
+  sendPasswordResetEmail
 } from 'firebase/auth'
 import {
   doc,
@@ -60,6 +60,13 @@ export const signInUser = async (email: any, password: any) => {
 
   return credentials;
 };
+/** 忘記密碼 */
+export const authForgetPassword = async (email: string) => {
+  const auth = getAuth();
+  // FIXME
+  // @ts-ignore
+  return await sendPasswordResetEmail(auth, email)
+}
 
 export function initUser () {
   return new Promise((resolve, reject) => {
