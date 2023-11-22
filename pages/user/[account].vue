@@ -135,6 +135,7 @@ const createNewRecord = () => {
               v-if="userDetail?.email"
               icon="mail_outline"
               :title="userDetail?.email"
+              :href="`mailto: ${userDetail?.email}`"
               round
               unelevated
               size="sm"
