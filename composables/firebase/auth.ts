@@ -3,6 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  getIdToken,
+  sendEmailVerification,
   sendPasswordResetEmail
 } from 'firebase/auth'
 import {
@@ -60,6 +62,14 @@ export const signInUser = async (email: any, password: any) => {
 
   return credentials;
 };
+/** 驗證 Firebase Auth 的 Email  */
+export const verifiedAuthEmail = async () => {
+  const auth = getAuth()
+  // FIXME
+  // @ts-ignore
+  return await sendEmailVerification(auth.currentUser)
+}
+
 /** 忘記密碼 */
 export const authForgetPassword = async (email: string) => {
   const auth = getAuth();

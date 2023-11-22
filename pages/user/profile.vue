@@ -31,7 +31,39 @@ const { pending } = await useAsyncData('myUserDetail', async () => {
   lazy: true
 })
 
-
+const emailIsSending = ref(null)
+const verifiedEmailText = ref('點擊驗證')
+const goVerifiedEmail = async () => {
+  if (emailIsSending.value) return
+  try {
+    emailIsSending.value = true
+    verifiedEmailText.value = '(發送中)'
+    await verifiedAuthEmail()
+    $q.notify({
+      type: 'positive',
+      message: '驗證信件已發送至 Email，請至電子信箱收取信件以驗證',
+      timeout: 10 * 1000
+    })
+    setTimeout(() => {
+      emailIsSending.value = false
+      verifiedEmailText.value = '點擊驗證'
+    }, 30 * 1000)
+  } catch (error) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    let notifyMessage = '驗證信件發送失敗'
+    if (notifyMessage === 'TOO_MANY_ATTEMPTS_TRY_LATER') {
+      notifyMessage = '請稍後再發送驗證信件'
+    } else {
+      emailIsSending.value = false
+      verifiedEmailText.value = '點擊驗證'
+    }
+    $q.notify({
+      type: 'negative',
+      message: notifyMessage
+    })
+  }
+}
 const submit = async () => {
   try {
     submitLoading.value = true
@@ -101,6 +133,10 @@ const submit = async () => {
         label="Email"
         placeholder="請輸入Email"
         disabled
+        :append-icon="firebaseUser?.emailVerified ? 'las la-check' : null"
+        :after-button="firebaseUser?.emailVerified ? null : verifiedEmailText"
+        :after-button-disabled="emailIsSending"
+        @clickAfter="goVerifiedEmail"
         />
       <ProfileField
         v-model="userInfo.facebook"
