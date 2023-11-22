@@ -5,7 +5,7 @@ const bookId = route.params.bookId
 if (!bookId) {
   throw new Error('網址錯誤')
 }
-const { data: bookDetail } = await useLazyAsyncData(`book:${bookId}`, async () => {
+const { data: bookDetail, pending: bookPending } = await useLazyAsyncData(`book:${bookId}`, async () => {
   const result = await getBook(bookId)
   return result
 }, {
@@ -57,57 +57,70 @@ const isOnSale = () => {
   <div>
     <div class="flex mb-4">
       <div class="flex flex-col justify-between flex-1 pr-5 pt-3">
-        <div>
-          <h1 v-if="bookDetail?.volumeInfo?.title" class=" mb-2 text-2xl font-bold">
-            {{ bookDetail?.volumeInfo?.title  }}
-          </h1>
-          <p v-if="bookDetail?.volumeInfo?.authors?.length">
-            作者：{{ bookDetail?.volumeInfo?.authors.join(', ') }}
-          </p>
-          <p v-if="bookDetail?.volumeInfo?.publisher">
-            出版社：{{ bookDetail?.volumeInfo?.publisher }}
-          </p>
-          <p v-if="bookDetail?.volumeInfo?.publishedDate">
-            出版日期：{{ bookDetail?.volumeInfo?.publishedDate }}
-          </p>
+        <div v-if="bookPending"
+          class=" w-full flex justify-center py-20"
+          >
+          <q-circular-progress
+            indeterminate
+            rounded
+            size="50px"
+            color="light-blue"
+            class="q-ma-md"
+          />
         </div>
-        <div class=" bg-stone-200 rounded p-2">
-          <p v-if="bookDetail?.saleInfo?.listPrice" class="mb-1">
-            售價：
-            <span :class="`${isOnSale() ? 'line-through text-gray-400' : ''}`">
-              {{ bookDetail?.saleInfo?.listPrice?.currencyCode }} {{ bookDetail?.saleInfo?.listPrice.amount }}
-            </span>
-            <span v-if="isOnSale()" class=" ml-2 text-rose-600 font-bold">
-              {{ bookDetail?.saleInfo?.retailPrice?.currencyCode }} {{ bookDetail?.saleInfo?.retailPrice.amount }}
-            </span>
-          </p>
-          <div class=" flex justify-between">
-            <div>
-              <q-btn
-                v-if="bookDetail?.saleInfo?.buyLink"
-                :href="bookDetail?.saleInfo?.buyLink"
-                outline
-                label="前往購買"
-                target="_blank"
-                size="sm"
-                icon-right="las la-external-link-alt"
-                />
-              <q-btn
-                v-if="bookDetail?.accessInfo?.webReaderLink"
-                :href="bookDetail?.accessInfo?.webReaderLink"
-                class=" ml-2"
-                outline
-                label="前往試閱"
-                target="_blank"
-                size="sm"
-                icon-right="las la-external-link-alt"
-                />
-            </div>
-            <span class=" self-end text-gray-400 text-sm">
-              Google 圖書 提供
-            </span>
+        <template v-else>
+          <div>
+            <h1 v-if="bookDetail?.volumeInfo?.title" class=" mb-2 text-2xl font-bold">
+              {{ bookDetail?.volumeInfo?.title  }}
+            </h1>
+            <p v-if="bookDetail?.volumeInfo?.authors?.length">
+              作者：{{ bookDetail?.volumeInfo?.authors.join(', ') }}
+            </p>
+            <p v-if="bookDetail?.volumeInfo?.publisher">
+              出版社：{{ bookDetail?.volumeInfo?.publisher }}
+            </p>
+            <p v-if="bookDetail?.volumeInfo?.publishedDate">
+              出版日期：{{ bookDetail?.volumeInfo?.publishedDate }}
+            </p>
           </div>
-        </div>
+          <div class=" bg-stone-200 rounded p-2">
+            <p v-if="bookDetail?.saleInfo?.listPrice" class="mb-1">
+              售價：
+              <span :class="`${isOnSale() ? 'line-through text-gray-400' : ''}`">
+                {{ bookDetail?.saleInfo?.listPrice?.currencyCode }} {{ bookDetail?.saleInfo?.listPrice.amount }}
+              </span>
+              <span v-if="isOnSale()" class=" ml-2 text-rose-600 font-bold">
+                {{ bookDetail?.saleInfo?.retailPrice?.currencyCode }} {{ bookDetail?.saleInfo?.retailPrice.amount }}
+              </span>
+            </p>
+            <div class=" flex justify-between">
+              <div>
+                <q-btn
+                  v-if="bookDetail?.saleInfo?.buyLink"
+                  :href="bookDetail?.saleInfo?.buyLink"
+                  outline
+                  label="前往購買"
+                  target="_blank"
+                  size="sm"
+                  icon-right="las la-external-link-alt"
+                  />
+                <q-btn
+                  v-if="bookDetail?.accessInfo?.webReaderLink"
+                  :href="bookDetail?.accessInfo?.webReaderLink"
+                  class=" ml-2"
+                  outline
+                  label="前往試閱"
+                  target="_blank"
+                  size="sm"
+                  icon-right="las la-external-link-alt"
+                  />
+              </div>
+              <span class=" self-end text-gray-400 text-sm">
+                Google 圖書 提供
+              </span>
+            </div>
+          </div>
+        </template>
       </div>
       <div class="flex-none">
         <NuxtImg
