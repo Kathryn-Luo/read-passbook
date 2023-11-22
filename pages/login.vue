@@ -39,19 +39,28 @@ const signin = async () => {
 const register = async () => {
   try {
     await createUser(registerForm.value.email, registerForm.value.password)
-    await signInUser(registerForm.value.email, registerForm.value.password)
     $q.notify({
       type: 'positive',
-      message: '註冊成功'
+      message: '註冊成功，請至電子信箱驗證電子郵件',
+      timeout: 30 * 1000
     })
-    setTimeout(() => {
-      router.replace('/')
-    }, 800)
+    tab.value = 'login'
    
-  } catch (error) {
+  } catch (error: any) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage)
+    let notifyMessage = '註冊失敗'
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        notifyMessage = '此電子郵件已註冊過'
+        break;
+      default:
+        break;
+    }
     $q.notify({
       type: 'negative',
-      message: '註冊失敗'
+      message: notifyMessage
     })
   } finally {
     $q.loading.hide()

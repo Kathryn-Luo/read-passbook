@@ -26,6 +26,7 @@ export const createUser = async (email: any, password: any) => {
     // 無使用者ID
     throw new Error('無使用者ID')
   }
+  await verifiedAuthEmail()
   $fetch(`/api/user/${credentials?.user?.uid}`, {
     method: 'POST',
     body: {
