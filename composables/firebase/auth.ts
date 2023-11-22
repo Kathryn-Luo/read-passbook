@@ -58,7 +58,7 @@ export const signInUser = async (email: any, password: any) => {
   console.log('data', data)
 
   // @ts-ignore
-  userCookie.value = data
+  userCookie.value = user
 
 
   return credentials;
@@ -137,9 +137,12 @@ export function getUserDetailWaitFirebaseLoaded () {
 export const signOutUser = async () => {
   const auth = getAuth();
   const result = await auth.signOut();
+  const userCookie = useCookie('userCookie')
+  userCookie.value = null
   const firebaseUser = useFirebaseUser()
   firebaseUser.value = null
   saveUserDetailInCookie(null)
+  
   const router = useRouter()
   router.replace({ name: 'login' })
   return result;
