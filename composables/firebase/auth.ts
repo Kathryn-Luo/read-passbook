@@ -3,7 +3,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  getIdToken
+  getIdToken,
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from 'firebase/auth'
 import {
   doc,
@@ -24,6 +26,7 @@ export const createUser = async (email: any, password: any) => {
     // 無使用者ID
     throw new Error('無使用者ID')
   }
+  await verifiedAuthEmail()
   $fetch(`/api/user/${credentials?.user?.uid}`, {
     method: 'POST',
     body: {
@@ -55,11 +58,26 @@ export const signInUser = async (email: any, password: any) => {
   console.log('data', data)
 
   // @ts-ignore
-  userCookie.value = data
+  userCookie.value = user
 
 
   return credentials;
 };
+/** 驗證 Firebase Auth 的 Email  */
+export const verifiedAuthEmail = async () => {
+  const auth = getAuth()
+  // FIXME
+  // @ts-ignore
+  return await sendEmailVerification(auth.currentUser)
+}
+
+/** 忘記密碼 */
+export const authForgetPassword = async (email: string) => {
+  const auth = getAuth();
+  // FIXME
+  // @ts-ignore
+  return await sendPasswordResetEmail(auth, email)
+}
 
 export function initUser () {
   return new Promise((resolve, reject) => {
@@ -119,9 +137,12 @@ export function getUserDetailWaitFirebaseLoaded () {
 export const signOutUser = async () => {
   const auth = getAuth();
   const result = await auth.signOut();
+  const userCookie = useCookie('userCookie')
+  userCookie.value = null
   const firebaseUser = useFirebaseUser()
   firebaseUser.value = null
   saveUserDetailInCookie(null)
+  
   const router = useRouter()
   router.replace({ name: 'login' })
   return result;
