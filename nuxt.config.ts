@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     'nuxt-quasar-ui',
     '@nuxt/image',
     '@nuxt/devtools',
-    // 'nuxt-vuefire',
+    '@zadigetvoltaire/nuxt-gtm'
   ],
   runtimeConfig: {
     // FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -59,7 +59,8 @@ export default defineNuxtConfig({
   quasar: {
     plugins: [
       'Notify',
-      'Loading'
+      'Loading',
+      'Dialog'
     ],
     extras: {
       fontIcons: [
@@ -68,7 +69,21 @@ export default defineNuxtConfig({
       ]
     }
   },
+  nitro: {
+    preset: 'firebase',
+    firebase: {
+      gen: 2
+    }
+  },
   devtools: {
     enabled: true
+  },
+  image: {
+    domains: [
+      'firebasestorage.googleapis.com'
+    ],
+  },
+  gtm: {
+    id: 'GTM-W2B3NPGP'
   }
 })

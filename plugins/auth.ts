@@ -1,3 +1,11 @@
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 export default defineNuxtPlugin(async () => {
-  await initUser();
+  const auth = getAuth();
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const user: any = await initUser();
+      const userDetail = await initUserDetail(user?.uid)
+    }
+  });
 })

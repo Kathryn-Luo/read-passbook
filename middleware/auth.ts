@@ -1,9 +1,8 @@
-// middleware/auth.ts
 export default defineNuxtRouteMiddleware(async (to, from) => {
   try {
-    const user = await useFirebaseUser()
+    const userCookie = useCookie('userCookie')
     // redirect the user to the login page
-    if (!user) {
+    if (!userCookie.value) {
       return navigateTo({
         path: '/login',
         query: {

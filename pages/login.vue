@@ -7,8 +7,11 @@ const $q = useQuasar()
 const tab = ref('login')
 
 const signinForm = ref({ email: '', password: '' });
-const registerForm = ref({ email: '', password: '' });
-const registerMessage = ref('')
+const registerForm = ref({
+  email: '',
+  password: '',
+  confirmPassword: '',
+});
 
 const signin = async () => {
   $q.loading.show()
@@ -34,25 +37,61 @@ const signin = async () => {
 }
 
 const register = async () => {
-  $q.loading.show()
-  console.log(registerForm.value.email, registerForm.value.password );
   try {
-    await createUser(registerForm.value.email, registerForm.value.password);
+    await createUser(registerForm.value.email, registerForm.value.password)
     $q.notify({
       type: 'positive',
-      message: '註冊成功'
+      message: '註冊成功，請至電子信箱驗證電子郵件',
+      timeout: 30 * 1000
     })
-    setTimeout(() => {
-      router.replace('/')
-    }, 800)
+    tab.value = 'login'
    
-  } catch (error) {
+  } catch (error: any) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage)
+    let notifyMessage = '註冊失敗'
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        notifyMessage = '此電子郵件已註冊過'
+        break;
+      default:
+        break;
+    }
     $q.notify({
       type: 'negative',
-      message: '登入失敗'
+      message: notifyMessage
     })
   } finally {
     $q.loading.hide()
+  }
+}
+
+const forgetPassword = async (email: string) => {
+  try {
+    const result = await authForgetPassword(email)
+    $q.notify({
+      type: 'positive',
+      message: '電子郵件發送成功，請至電子信箱查看',
+      timeout: 30 * 1000
+    })
+
+  } catch (error: any) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode, errorMessage)
+    let notifyMessage = '註冊失敗'
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        notifyMessage = '此電子郵件已註冊過'
+        break;
+      default:
+        break;
+    }
+    $q.notify({
+      type: 'negative',
+      message: notifyMessage
+    })
   }
 }
 </script>
@@ -69,19 +108,16 @@ const register = async () => {
 
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="login">
-        <AuthFirebase
-          title="登入"
+        <LoginPanel
           :form="signinForm"
-          @submit="signin"
+          @signin="signin"
+          @forgetPassword="forgetPassword"
           />
       </q-tab-panel>
-
       <q-tab-panel name="register">
-        <AuthFirebase
-          title="註冊"
+        <LoginRegisterPanel
           :form="registerForm"
-          :message="registerMessage"
-          @submit="register"
+          @register="register"
           />
       </q-tab-panel>
     </q-tab-panels>
