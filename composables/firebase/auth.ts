@@ -27,7 +27,7 @@ export const createUser = async (email: any, password: any) => {
     throw new Error('無使用者ID')
   }
   await verifiedAuthEmail()
-  $fetch(`/api/user/${credentials?.user?.uid}`, {
+  $fetch(`/api/user/detail/${credentials?.user?.uid}`, {
     method: 'POST',
     body: {
       email,
@@ -169,7 +169,7 @@ export const updateUser = async (userInfo: any) => {
   }
 
   try {
-    await $fetch(`/api/user/${currentUser?.uid}`, {
+    await $fetch(`/api/user/detail/${currentUser?.uid}`, {
       method: 'put',
       body: userInfo
     })
@@ -209,7 +209,7 @@ export const getUserByUid = async (uid: string = '') => {
         message: '無使用者uid',
       })
     }
-    const result = await $fetch(`/api/user/${uid}`)
+    const result = await $fetch(`/api/user/detail/${uid}`)
     return result
   } catch (error) {
     throw createError({
