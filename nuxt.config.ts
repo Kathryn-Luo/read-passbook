@@ -78,6 +78,11 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true
   },
+  image: {
+    domains: [
+      'firebasestorage.googleapis.com'
+    ],
+  },
   gtm: {
     id: 'GTM-W2B3NPGP'
   }
