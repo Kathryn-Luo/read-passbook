@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     'nuxt-quasar-ui',
     '@nuxt/image',
     '@nuxt/devtools',
-    '@zadigetvoltaire/nuxt-gtm'
+    'nuxt-gtag'
   ],
   runtimeConfig: {
     // FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -83,7 +83,7 @@ export default defineNuxtConfig({
       'firebasestorage.googleapis.com'
     ],
   },
-  gtm: {
-    id: 'GTM-W2B3NPGP'
+  gtag: {
+    id: 'G-VX9T7W0MSE'
   }
 })
