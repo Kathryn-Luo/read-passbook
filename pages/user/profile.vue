@@ -72,7 +72,8 @@ const submit = async () => {
     await updateUser({
       uid: firebaseUser.value.uid,
       account: userInfo.value.account,
-      nickName: userInfo.value.nickName
+      nickName: userInfo.value.nickName,
+      profile: userInfo.value.profile
     })
     $q.notify({
       type: 'positive',
@@ -171,6 +172,7 @@ const clickFileButton = () => {
         label="Email"
         placeholder="請輸入Email"
         disabled
+        type="email"
         :append-icon="firebaseUser?.emailVerified ? 'las la-check' : null"
         :after-button="firebaseUser?.emailVerified ? null : verifiedEmailText"
         :after-button-disabled="emailIsSending"
@@ -185,6 +187,12 @@ const clickFileButton = () => {
         v-model="userInfo.instagram"
         label="Instagram 帳號"
         placeholder="請輸入 Instagram 帳號"
+        />
+      <ProfileField
+        v-model="userInfo.profile"
+        label="個人簡介"
+        placeholder="請輸入個人簡介"
+        type="textarea"
         />
     </q-form>
     <q-btn

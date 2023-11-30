@@ -5,6 +5,7 @@ const account = route.params.account
 
 const { data: userDetail, pending } = await useAsyncData(`userDetail:${account}`, async () => {
   const currentUserDeatil = await getUserByAccount(account)
+  currentUserDeatil.profileArray = getLinesTextFromTextarea(currentUserDeatil?.profile || [])
   return currentUserDeatil
 })
 
@@ -159,6 +160,11 @@ const createNewRecord = () => {
               class=" bg-[#3b5998] text-white"
               />
           </div>
+          <p v-if="userDetail?.profile">
+            <template v-for="text in userDetail?.profileArray">
+              {{ text }}<br />
+            </template>
+          </p>
         </div>
       </div>
     </div>
