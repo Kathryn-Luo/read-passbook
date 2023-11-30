@@ -79,7 +79,7 @@
           </div>
         </nuxt-link>
         <div
-          v-if="book.userDetail && book.userDetail.displayName"
+          v-if="book.userDetail && book.userDetail.nickName"
           class="group/user mt-2 border-t border-double "
           >
           <nuxt-link
@@ -91,7 +91,7 @@
             >
             <p>
               <span class="mr-2 font-bold group-hover/user:underline group-hover/user:text-cyan-700">
-                {{ book.userDetail.displayName }}
+                {{ book.userDetail.nickName }}
               </span>
               正在閱讀
             </p>

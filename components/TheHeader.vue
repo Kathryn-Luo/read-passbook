@@ -56,7 +56,7 @@ const clickSignOut = async () => {
               auto-close
               stretch
               flat
-              :label="firebaseUserDetail?.displayName"
+              :label="firebaseUserDetail?.nickName"
               icon="person"
               >
               <q-list>
