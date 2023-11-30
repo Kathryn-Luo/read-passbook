@@ -77,7 +77,7 @@ const readDone = async (book) => {
 const undoReading = async (book) => {
   try {
     delete book.endDateTime
-    await updateUserReadBooks(book.id, book)
+    await updateUserReadBook(book.id, book)
     userReadBookRefresh()
   } catch (error) {
     console.log('undoReading error', error)
