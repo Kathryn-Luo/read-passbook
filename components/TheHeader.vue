@@ -24,7 +24,11 @@ const clickSignOut = async () => {
 </script>
 
 <template>
-  <q-header elevated class=" sticky top-0 bg-cyan-700">
+  <q-header
+    elevated
+    reveal
+    class=" bg-cyan-700"
+    >
     <div class="container mx-auto">
       <q-toolbar>
         <q-btn
@@ -37,6 +41,7 @@ const clickSignOut = async () => {
           <ClientOnly>
             <q-route-tab
               v-if="firebaseUser"
+              class="gt-sm"
               name="read-list"
               label="閱讀紀錄"
               :to="{
@@ -55,6 +60,18 @@ const clickSignOut = async () => {
               icon="person"
               >
               <q-list>
+                <q-item
+                  class="lt-md"
+                  clickable
+                  :to="{
+                    name: 'user-account',
+                    params: {
+                      account: firebaseUserDetail?.account
+                    }
+                  }"
+                  >
+                  <q-item-section>閱讀紀錄</q-item-section>
+                </q-item>
                 <q-item
                   clickable
                   :to="{
