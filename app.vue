@@ -20,7 +20,7 @@ useSeoMeta({
     <q-layout class=" bg-stone-100 min-h-full">
       <TheHeader />
       <q-page-container>
-        <q-page padding class="container mx-auto w-3/5 px-8 bg-white">
+        <q-page padding class="container mx-auto md:w-3/5 bg-white">
           <NuxtPage />
         </q-page>
       </q-page-container>

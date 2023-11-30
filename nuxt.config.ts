@@ -56,6 +56,18 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true
   },
+  tailwindcss: {
+    config: {
+      theme: {
+        screens: {
+          'sm': '600px',
+          'md': '1024px',
+          'lg': '1440px',
+          'xl': '1920px',
+        }
+      }
+    }
+  },
   quasar: {
     plugins: [
       'Notify',
@@ -67,6 +79,11 @@ export default defineNuxtConfig({
         'material-icons',
         'line-awesome'
       ]
+    },
+    config: {
+      brand: {
+        primary: '#0e7490'
+      }
     }
   },
   nitro: {

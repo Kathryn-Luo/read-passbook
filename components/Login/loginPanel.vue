@@ -41,6 +41,7 @@ const forgetPasswordSubmit = async () => {
       label="Email"
       type="email"
       lazy-rules="ondemand"
+      autofocus
       @keyup.enter="submit"
       :rules="[
         val => val && val.length > 0 || '請輸入 Email',

@@ -174,6 +174,7 @@ export const updateUser = async (userInfo: any) => {
       body: userInfo
     })
     await saveUserDetailInCookie(userInfo)
+    updateUseFirebaseUserDetail(userInfo)
 
   } catch (error) {
     console.log('error', error)
@@ -235,4 +236,9 @@ export const saveUserDetailInCookie = async (userDetail: any) => {
   firebaseUserDetail.value = userDetail
   const userDetailCookie = useCookie('userDetailCookie')
   userDetailCookie.value = JSON.stringify(userDetail)
+}
+
+export const updateUseFirebaseUserDetail = (userDetail: object) => {
+  const firebaseUserDetail = useFirebaseUserDetail();
+  firebaseUserDetail.value = userDetail
 }

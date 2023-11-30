@@ -5,6 +5,7 @@ const account = route.params.account
 
 const { data: userDetail, pending } = await useAsyncData(`userDetail:${account}`, async () => {
   const currentUserDeatil = await getUserByAccount(account)
+  currentUserDeatil.profileArray = getLinesTextFromTextarea(currentUserDeatil?.profile || [])
   return currentUserDeatil
 })
 
@@ -76,7 +77,7 @@ const readDone = async (book) => {
 const undoReading = async (book) => {
   try {
     delete book.endDateTime
-    await updateUserReadBooks(book.id, book)
+    await updateUserReadBook(book.id, book)
     userReadBookRefresh()
   } catch (error) {
     console.log('undoReading error', error)
@@ -99,7 +100,7 @@ const createNewRecord = () => {
 
 <template>
   <div>
-    <div class="flex w-3/5 mx-auto mb-10">
+    <div class="flex md:w-3/5 mx-auto justify-center">
       <div v-if="pending"
         class=" w-full flex justify-center py-20"
         >
@@ -111,18 +112,19 @@ const createNewRecord = () => {
           class="q-ma-md"
         />
       </div>
-      <template v-else>
+      <div
+        v-else
+        class="md:flex"
+        >
         <div
-          class=" h-[150px] w-[150px] shadow-lg border-4 border-solid border-cyan-700 rounded-full bg-slate-300 overflow-hidden"
+          class=" text-center"
           >
-          <NuxtImg
-            v-if="userDetail?.image"
-            :src="userDetail?.image"
-            width="150"
-            height="150"
-          />
+          <AccountAvatar
+            :image-url="userDetail?.image"
+            size="120"
+            />
         </div>
-        <div class="pl-8 flex flex-col justify-around">
+        <div class=" text-center md:text-left md:pl-8 flex flex-col justify-around">
           <div>
             <h2
               class="text-2xl"
@@ -130,15 +132,15 @@ const createNewRecord = () => {
               {{ userDetail?.nickName }}
             </h2>
           </div>
-          <div>
+          <div class=" mt-2">
             <q-btn
               v-if="userDetail?.email"
               icon="mail_outline"
               :title="userDetail?.email"
               :href="`mailto: ${userDetail?.email}`"
               round
-              unelevated
               size="sm"
+              unelevated
               class="bg-amber-400 text-white mr-2"
               />
             <q-btn
@@ -158,8 +160,13 @@ const createNewRecord = () => {
               class=" bg-[#3b5998] text-white"
               />
           </div>
+          <p v-if="userDetail?.profile">
+            <template v-for="text in userDetail?.profileArray">
+              {{ text }}<br />
+            </template>
+          </p>
         </div>
-      </template>
+      </div>
     </div>
     <ClientOnly>
       <q-btn
