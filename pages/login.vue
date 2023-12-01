@@ -136,4 +136,7 @@ const forgetPassword = async (email: string) => {
           />
       </q-tab-panel>
     </q-tab-panels>
+    <div class=" flex justify-center">
+      <LoginGoogleLogin />
+    </div>
 </template>
