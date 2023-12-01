@@ -40,11 +40,13 @@ const signin = async () => {
     setTimeout(() => {
       router.replace('/')
     }, 800)
-  } catch (error) {
+  } catch (error: any) {
     console.log(error)
+    const errorCode = error.code;
+    const notifyMessage = authErrorMessage(errorCode) || '登入失敗'
     $q.notify({
       type: 'negative',
-      message: '登入失敗'
+      message: notifyMessage
     })
   } finally {
     $q.loading.hide()
@@ -65,14 +67,7 @@ const register = async () => {
     const errorCode = error.code;
     const errorMessage = error.message;
     console.log(errorCode, errorMessage)
-    let notifyMessage = '註冊失敗'
-    switch (errorCode) {
-      case 'auth/email-already-in-use':
-        notifyMessage = '此電子郵件已註冊過'
-        break;
-      default:
-        break;
-    }
+    const notifyMessage = authErrorMessage(errorCode) || '註冊失敗'
     $q.notify({
       type: 'negative',
       message: notifyMessage
@@ -94,15 +89,7 @@ const forgetPassword = async (email: string) => {
   } catch (error: any) {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorCode, errorMessage)
-    let notifyMessage = '註冊失敗'
-    switch (errorCode) {
-      case 'auth/email-already-in-use':
-        notifyMessage = '此電子郵件已註冊過'
-        break;
-      default:
-        break;
-    }
+    const notifyMessage = authErrorMessage(errorCode) || '發送失敗'
     $q.notify({
       type: 'negative',
       message: notifyMessage
