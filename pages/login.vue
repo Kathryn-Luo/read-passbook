@@ -4,6 +4,21 @@ import { useQuasar } from 'quasar'
 const router = useRouter()
 const $q = useQuasar()
 
+// 已登入會導向至首頁
+// TODO: 如果 userCookie 資料錯誤？
+definePageMeta({
+  middleware: [
+    function (to, from) {
+      const userCookie = useCookie('userCookie')
+      if (userCookie.value) {
+        return navigateTo({
+          path: '/',
+        })
+      }
+    },
+  ],
+});
+
 const tab = ref('login')
 
 const signinForm = ref({ email: '', password: '' });
