@@ -5,12 +5,17 @@ const {
   border
 } = defineProps({
   imageUrl: String,
-  size: Number,
-  border: Number
+  size: Number | String,
+  border: Number | String
 })
 
+const config = useRuntimeConfig()
 
 let imageSize = reactive(size ? size : 150)
+const imageIsFromFirestorge = imageUrl.indexOf(config.public.firestoreImagePrefixUrl) > -1
+const image = imageIsFromFirestorge
+  ? getFixedImageUrlFromFirestore(imageUrl)
+  : imageUrl
 </script>
 
 <template>
@@ -24,7 +29,7 @@ let imageSize = reactive(size ? size : 150)
     >
     <NuxtImg
       v-if="imageUrl"
-      :src="getFixedImageUrlFromFirestore(imageUrl)"
+      :src="image"
       fit="cover"
       :height="imageSize"
       :width="imageSize"
