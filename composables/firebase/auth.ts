@@ -5,7 +5,10 @@ import {
   onAuthStateChanged,
   getIdToken,
   sendEmailVerification,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth'
 import {
   doc,
@@ -63,6 +66,52 @@ export const signInUser = async (email: any, password: any) => {
 
   return credentials;
 };
+
+export const loginWithGoogle = async () => {
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+  // 可選擇不同帳號
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  })
+  signInWithRedirect(auth, provider);
+}
+
+export const getGoogleLoginUser = async () => {
+  const auth = getAuth();
+  try {
+    const result = await getRedirectResult(auth)
+    if (!result) return
+    const credential = GoogleAuthProvider.credentialFromResult(result)
+    if (!credential) return
+    const token = credential?.accessToken;
+    const user = result?.user;
+    if (!user || !user.uid) return
+
+    const userDetail = await getUserByUid(user.uid)
+    if (!userDetail) {
+      // 首次以 Google 登入
+      $fetch(`/api/user/detail/${user.uid}`, {
+        method: 'POST',
+        body: {
+          uid: user.uid,
+          email: user.email,
+          account: user.uid,
+          nickName: user.displayName,
+          image: user.photoURL
+        }
+      })
+    }
+
+
+    return user
+  } catch (error: any) {
+    // const errorCode = error.code;
+    // const errorMessage = error.message;
+    return error
+  }
+}
+
 /** 驗證 Firebase Auth 的 Email  */
 export const verifiedAuthEmail = async () => {
   const auth = getAuth()
@@ -174,6 +223,7 @@ export const updateUser = async (userInfo: any) => {
       body: userInfo
     })
     await saveUserDetailInCookie(userInfo)
+    updateUseFirebaseUserDetail(userInfo)
 
   } catch (error) {
     console.log('error', error)
@@ -235,4 +285,9 @@ export const saveUserDetailInCookie = async (userDetail: any) => {
   firebaseUserDetail.value = userDetail
   const userDetailCookie = useCookie('userDetailCookie')
   userDetailCookie.value = JSON.stringify(userDetail)
+}
+
+export const updateUseFirebaseUserDetail = (userDetail: object) => {
+  const firebaseUserDetail = useFirebaseUserDetail();
+  firebaseUserDetail.value = userDetail
 }

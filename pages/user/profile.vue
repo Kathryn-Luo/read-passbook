@@ -6,7 +6,6 @@ const config = useRuntimeConfig()
 const submitLoading = ref(false)
 const $q = useQuasar()
 const fileInput = ref(null)
-const imageSize = reactive(150)
 
 const firebaseUser = useFirebaseUser()
 const firebaseUserDetail = useFirebaseUserDetail()
@@ -73,7 +72,8 @@ const submit = async () => {
     await updateUser({
       uid: firebaseUser.value.uid,
       account: userInfo.value.account,
-      nickName: userInfo.value.nickName
+      nickName: userInfo.value.nickName,
+      profile: userInfo.value.profile
     })
     $q.notify({
       type: 'positive',
@@ -111,16 +111,6 @@ const uploadImage = async (event) => {
   }
 }
 
-const getFixedImageUrl = (imageUrl) => {
-  // 為了修正 Nuxt/image 加上 domains 後產生的問題
-  // TODO: 確認後續版本是否修正，並跟著調整
-  if (imageUrl && imageUrl.indexOf('http') === -1) return imageUrl
-  const splicedImgUrl = imageUrl.replace('https://firebasestorage.googleapis.com/v0/b/read-passbook.appspot.com/o/', '')
-  const encodedImagePath = encodeURIComponent(splicedImgUrl)
-  const fixedUrl = 'https://firebasestorage.googleapis.com/v0/b/read-passbook.appspot.com/o/' + encodedImagePath
-  return fixedUrl
-}
-
 const clickFileButton = () => {
   fileInput.value.click()
 }
@@ -129,22 +119,8 @@ const clickFileButton = () => {
 
 <template>
   <div class="text-center mb-5 ">
-    <div class=" inline-block relative">
-      <div
-        :style="{
-          height: `${imageSize}px`,
-          width: `${imageSize}px`,
-        }"
-        class="inline-block shadow-lg border-4 border-solid border-cyan-700 rounded-full bg-slate-300 overflow-hidden"
-        >
-        <NuxtImg
-          v-if="userInfo?.image"
-          :src="getFixedImageUrl(userInfo?.image)"
-          fit="cover"
-          :height="imageSize"
-          :width="imageSize"
-        />
-      </div>
+    <div class=" mt-3 inline-block relative">
+      <AccountAvatar :image-url="userInfo?.image" />
       <div
         class=" cursor-pointer absolute bottom-0 right-0"
         >
@@ -196,6 +172,7 @@ const clickFileButton = () => {
         label="Email"
         placeholder="請輸入Email"
         disabled
+        type="email"
         :append-icon="firebaseUser?.emailVerified ? 'las la-check' : null"
         :after-button="firebaseUser?.emailVerified ? null : verifiedEmailText"
         :after-button-disabled="emailIsSending"
@@ -211,12 +188,21 @@ const clickFileButton = () => {
         label="Instagram 帳號"
         placeholder="請輸入 Instagram 帳號"
         />
-      <q-btn
-        :loading="submitLoading"
-        type="submit">
-        儲存
-      </q-btn>
+      <ProfileField
+        v-model="userInfo.profile"
+        label="個人簡介"
+        placeholder="請輸入個人簡介"
+        type="textarea"
+        />
     </q-form>
+    <q-btn
+      :loading="submitLoading"
+      color="primary"
+      class=" w-full mt-3"
+      @click="submit"
+      >
+      儲存
+    </q-btn>
   </div>
 
 </template>

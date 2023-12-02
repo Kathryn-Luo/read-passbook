@@ -79,7 +79,7 @@
           </div>
         </nuxt-link>
         <div
-          v-if="book.userDetail && book.userDetail.displayName"
+          v-if="book.userDetail && book.userDetail.nickName"
           class="group/user mt-2 border-t border-double "
           >
           <nuxt-link
@@ -87,17 +87,19 @@
               name: 'user-account',
               params: { account: book.userDetail.account }
             }"
-            class=" text-right"
+            class=" flex items-end justify-end py-1"
             >
-            <p>
-              <span class="mr-2 font-bold group-hover/user:underline group-hover/user:text-cyan-700">
-                {{ book.userDetail.displayName }}
+            <p class=" mr-1">
+              <span class="mr-1 font-bold group-hover/user:underline group-hover/user:text-cyan-700">
+                {{ book.userDetail.nickName }}
               </span>
               正在閱讀
             </p>
-            <NuxtImg
+            <AccountAvatar
               v-if="book.userDetail.image"
-              :src="book.userDetail.image || ''"
+              :image-url="book.userDetail.image"
+              size="50"
+              border="3"
               />
           </nuxt-link>
         </div>

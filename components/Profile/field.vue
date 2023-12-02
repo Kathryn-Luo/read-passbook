@@ -2,6 +2,7 @@
 const props = defineProps({
   label: String,
   rules: Array,
+  type: String,
   placeholder: String,
   disabled: Boolean,
   appendIcon: String,
@@ -19,15 +20,16 @@ const emit = defineEmits([
 </script>
 
 <template>
-   <div class=" table-row">
-    <h4 class=" table-cell text-lg">{{ label }}</h4>
-    <div class="table-cell">
+   <div class=" md:table-row">
+    <h4 class=" sm:mb-2 md:mb-0 md:table-cell text-lg">{{ label }}</h4>
+    <div class="md:table-cell">
       <q-input
         outlined
         filled
         bottom-slots
         v-model="value"
         :placeholder="placeholder"
+        :type="type || 'text'"
         :disable="disabled"
         lazy-rules="ondemand"
         @keyup.enter="$emit('submit')"

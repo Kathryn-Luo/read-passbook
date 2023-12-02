@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     'nuxt-quasar-ui',
     '@nuxt/image',
     '@nuxt/devtools',
-    '@zadigetvoltaire/nuxt-gtm'
+    'nuxt-gtag'
   ],
   runtimeConfig: {
     // FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -20,9 +20,11 @@ export default defineNuxtConfig({
         nickName: '',
         image: '',
         email: '',
+        profile: '',
         Instagram: '',
         Facebook: ''
       },
+      firestoreImagePrefixUrl: 'https://firebasestorage.googleapis.com/v0/b/read-passbook.appspot.com/o/',
       FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
       FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
       FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
@@ -56,6 +58,18 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true
   },
+  tailwindcss: {
+    config: {
+      theme: {
+        screens: {
+          'sm': '600px',
+          'md': '1024px',
+          'lg': '1440px',
+          'xl': '1920px',
+        }
+      }
+    }
+  },
   quasar: {
     plugins: [
       'Notify',
@@ -67,6 +81,11 @@ export default defineNuxtConfig({
         'material-icons',
         'line-awesome'
       ]
+    },
+    config: {
+      brand: {
+        primary: '#0e7490'
+      }
     }
   },
   nitro: {
@@ -83,7 +102,7 @@ export default defineNuxtConfig({
       'firebasestorage.googleapis.com'
     ],
   },
-  gtm: {
-    id: 'GTM-W2B3NPGP'
+  gtag: {
+    id: 'G-VX9T7W0MSE'
   }
 })

@@ -56,7 +56,7 @@ const isOnSale = () => {
 <template>
   <div>
     <div class="flex mb-4">
-      <div class="flex flex-col justify-between flex-1 pr-5 pt-3">
+      <div class="flex order-2 md:order-1 flex-col justify-between flex-1 md:pr-5 pt-3">
         <div v-if="bookPending"
           class=" w-full flex justify-center py-20"
           >
@@ -83,7 +83,7 @@ const isOnSale = () => {
               出版日期：{{ bookDetail?.volumeInfo?.publishedDate }}
             </p>
           </div>
-          <div class=" bg-stone-200 rounded p-2">
+          <div class=" bg-stone-200 rounded p-2 mt-2">
             <p v-if="bookDetail?.saleInfo?.listPrice" class="mb-1">
               售價：
               <span :class="`${isOnSale() ? 'line-through text-gray-400' : ''}`">
@@ -122,8 +122,9 @@ const isOnSale = () => {
           </div>
         </template>
       </div>
-      <div class="flex-none">
+      <div class="flex-none order-1 md:order-2 w-full md:w-auto text-center bg-gray-100">
         <NuxtImg
+          class=" inline-block"
           v-if="imageUrl || bookDetail.imageLinks?.thumbnail"
           :src="imageUrl || bookDetail.imageLinks?.thumbnail"
         />
