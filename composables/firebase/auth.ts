@@ -88,21 +88,23 @@ export const getGoogleLoginUser = async () => {
     const user = result?.user;
     if (!user || !user.uid) return
 
-    const userDetail = await getUserByUid(user.uid)
+    let userDetail = await getUserByUid(user.uid)
     if (!userDetail) {
       // 首次以 Google 登入
+      userDetail = {
+        uid: user.uid,
+        email: user.email,
+        account: user.uid,
+        nickName: user.displayName,
+        image: user.photoURL
+      }
       $fetch(`/api/user/detail/${user.uid}`, {
         method: 'POST',
-        body: {
-          uid: user.uid,
-          email: user.email,
-          account: user.uid,
-          nickName: user.displayName,
-          image: user.photoURL
-        }
+        body: userDetail
       })
     }
 
+    saveUserDetailInCookie(userDetail)
 
     return user
   } catch (error: any) {
@@ -251,7 +253,7 @@ export const updateUser = async (userInfo: any) => {
 // }
 
 /** 取得使用者資訊 By uid */
-export const getUserByUid = async (uid: string = '') => {
+export const getUserByUid = async (uid: string = ''): Promise<object> => {
   try {
     if (!uid) {
       throw createError({
@@ -260,7 +262,7 @@ export const getUserByUid = async (uid: string = '') => {
       })
     }
     const result = await $fetch(`/api/user/detail/${uid}`)
-    return result
+    return result as object
   } catch (error) {
     throw createError({
       statusCode: 400,
