@@ -88,23 +88,26 @@ export const getGoogleLoginUser = async () => {
     const user = result?.user;
     if (!user || !user.uid) return
 
-    let userDetail = await getUserByUid(user.uid)
-    if (!userDetail) {
-      // 首次以 Google 登入
-      userDetail = {
-        uid: user.uid,
-        email: user.email,
-        account: user.uid,
-        nickName: user.displayName,
-        image: user.photoURL
-      }
-      $fetch(`/api/user/detail/${user.uid}`, {
-        method: 'POST',
-        body: userDetail
-      })
-    }
+    getUserByUid(user.uid)
+      .then(result => {
+        let userDetail = {}
+        if (!result) {
+          // 首次以 Google 登入
+          userDetail = {
+            uid: user.uid,
+            email: user.email,
+            account: user.uid,
+            nickName: user.displayName,
+            image: user.photoURL
+          }
+          $fetch(`/api/user/detail/${user.uid}`, {
+            method: 'POST',
+            body: userDetail
+          })
+        }
 
-    saveUserDetailInCookie(userDetail)
+        saveUserDetailInCookie(userDetail)
+      })
 
     return user
   } catch (error: any) {
