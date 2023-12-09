@@ -25,6 +25,7 @@ export default defineNuxtConfig({
         Facebook: ''
       },
       firestoreImagePrefixUrl: 'https://firebasestorage.googleapis.com/v0/b/read-passbook.appspot.com/o/',
+      googleBookImagePrefixUrl: 'http://books.google.com/books/',
       FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
       FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
       FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
@@ -99,7 +100,8 @@ export default defineNuxtConfig({
   },
   image: {
     domains: [
-      'firebasestorage.googleapis.com'
+      'firebasestorage.googleapis.com',
+      'books.google.com/books'
     ],
   },
   gtag: {
