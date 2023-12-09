@@ -9,22 +9,17 @@ const selection = defineModel()
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex py-2 border-b last:border-none border-dashed border-cyan-600">
     <div
-      :style="{
-        height: 100,
-        width: 100
-      }"
       class=" flex-none"
       >
-      <NuxtImg
-        v-if="volumeInfo?.imageLinks?.smallThumbnail"
-        :src="volumeInfo?.imageLinks?.smallThumbnail"
-        fit="contain"
+      <BookItemImage
+        :imageUrl="volumeInfo?.imageLinks?.smallThumbnail"
+        size="80"
         />
     </div>
-    <div class="flex-1">
-      <p class=" text-black text-sm">{{ volumeInfo?.title }}</p>
+    <div class="flex-1 pl-2 text-black text-xs">
+      <p class=" font-bold text-sm">{{ volumeInfo?.title }}</p>
       <p v-if="volumeInfo?.authors?.length">作者：{{ volumeInfo?.authors.join(', ') }}</p>
       <p v-if="volumeInfo?.publisher">出版社：{{ volumeInfo?.publisher }}</p>
       <p v-if="volumeInfo?.publishedDate">出版日期：{{ volumeInfo?.publishedDate }}</p>
