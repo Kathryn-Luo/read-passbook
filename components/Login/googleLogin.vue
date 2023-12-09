@@ -1,12 +1,12 @@
 <script setup>
 const router = useRouter()
 
-onMounted(async() => {
-  const user = await getGoogleLoginUser()
-  if (user) {
-    router.replace('/')
-  }
-})
+getGoogleLoginUser()
+  .then(user => {
+    if (user) {
+      router.replace('/')
+    }
+  })
 </script>
 
 

@@ -37,9 +37,7 @@ const signin = async () => {
       type: 'positive',
       message: '登入成功'
     })
-    setTimeout(() => {
-      router.replace('/')
-    }, 800)
+    router.replace('/')
   } catch (error: any) {
     console.log(error)
     const errorCode = error.code;
