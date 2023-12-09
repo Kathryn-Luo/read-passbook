@@ -149,24 +149,24 @@
       </q-card-section>
 
       <q-card-section
-        class="flex-1 py-1 scroll h-full md:h-[50vh] bg-gray-100 !shadow-inner "
+        class="flex-1 py-1 px-0 scroll h-full md:h-[50vh] bg-gray-100 !shadow-inner "
         >
-        <div class=" h-full">
+        <div class="md:px-2">
           <BookItem
             v-for="book in bookList"
             :key="book.id"
             v-bind="book"
             v-model="selection"
             />
-          <div
-            v-show="noSearchResult"
-            class=" flex flex-col items-center justify-center h-full text-gray-500 font-bold ">
-            <q-icon
-              name="las la-search"
-              size="3rem"
-              />
-            無更多搜尋結果
-          </div>
+        </div>
+        <div
+          v-show="noSearchResult"
+          class=" flex flex-col items-center justify-center h-full text-gray-500 font-bold ">
+          <q-icon
+            name="las la-search"
+            size="3rem"
+            />
+          無更多搜尋結果
         </div>
         <div
           v-show="searchLoading"
@@ -180,20 +180,22 @@
             class="q-ma-md"
           />
         </div>
-        <q-btn
-          v-if="pageOption.totalCount"
-          :disable="!hasNextPage"
-          class=" w-full"
-          label="更多結果"
-          color="primary"
-          outline
-          @click="nextPage"
-          />
+        <div class=" px-2 mt-2">
+          <q-btn
+            v-if="pageOption.totalCount"
+            :disable="!hasNextPage"
+            class=" flex-none w-full"
+            label="更多結果"
+            color="primary"
+            outline
+            @click="nextPage"
+            />
+        </div>
       </q-card-section>
 
       <q-card-actions
         align="center"
-        class="flex-none mt-2 bg-white text-teal"
+        class="flex-none bg-white text-teal"
         >
         <q-btn
           @click="save"

@@ -1,6 +1,6 @@
 <script setup>
 const {
-  imageUrl,
+  imageUrl = '',
   size,
   border
 } = defineProps({
