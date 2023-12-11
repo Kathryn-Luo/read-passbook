@@ -70,6 +70,7 @@ const forgetPasswordSubmit = async () => {
     </q-input>
     <q-btn
       label="登入"
+      color="primary"
       @click="submit"
       class=" w-full mt-8"
       />

@@ -1,5 +1,6 @@
 import {
   getAuth,
+  signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
@@ -58,7 +59,6 @@ export const signInUser = async (email: any, password: any) => {
     method: "POST",
     body: JSON.stringify({ firebaseIdToken }),
   });
-  console.log('data', data)
 
   // @ts-ignore
   userCookie.value = user
@@ -77,45 +77,6 @@ export const loginWithGoogle = async () => {
   signInWithRedirect(auth, provider);
 }
 
-export const getGoogleLoginUser = async () => {
-  const auth = getAuth();
-  try {
-    const result = await getRedirectResult(auth)
-    if (!result) return
-    const credential = GoogleAuthProvider.credentialFromResult(result)
-    if (!credential) return
-    const token = credential?.accessToken;
-    const user = result?.user;
-    if (!user || !user.uid) return
-
-    getUserByUid(user.uid)
-      .then(result => {
-        let userDetail = {}
-        if (!result) {
-          // 首次以 Google 登入
-          userDetail = {
-            uid: user.uid,
-            email: user.email,
-            account: user.uid,
-            nickName: user.displayName,
-            image: user.photoURL
-          }
-          $fetch(`/api/user/detail/${user.uid}`, {
-            method: 'POST',
-            body: userDetail
-          })
-        }
-
-        saveUserDetailInCookie(userDetail)
-      })
-
-    return user
-  } catch (error: any) {
-    // const errorCode = error.code;
-    // const errorMessage = error.message;
-    return error
-  }
-}
 
 /** 驗證 Firebase Auth 的 Email  */
 export const verifiedAuthEmail = async () => {
@@ -138,11 +99,18 @@ export function initUser () {
     const auth = getAuth()
     const userCookie = useCookie('userCookie')
     const firebaseUser = useFirebaseUser()
-    onAuthStateChanged(auth, (user) => {
+    if (userCookie.value) {
+      firebaseUser.value = userCookie.value
+      return resolve(userCookie.value)
+    }
+    if (firebaseUser.value) {
+      userCookie.value = firebaseUser.value
+      return resolve(firebaseUser.value)
+    }
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         userCookie.value = JSON.stringify(user)
         firebaseUser.value = user
-  
         $fetch("/api/auth", {
           method: "POST",
           body: { user },
@@ -157,10 +125,12 @@ export function initUser () {
 }
 
 export const initUserDetail = async (uid: string) => {
+  if (!uid) return
   const firebaseUserDetail = useFirebaseUserDetail()
   const userDetailCookie = useCookie('userDetailCookie')
   if (userDetailCookie.value) {
     firebaseUserDetail.value = userDetailCookie.value
+    return userDetailCookie.value
   }
 
   const userDetail = await getUserByUid(uid)
@@ -190,13 +160,12 @@ export function getUserDetailWaitFirebaseLoaded () {
 // TODO: 清除使用者資訊
 export const signOutUser = async () => {
   const auth = getAuth();
-  const result = await auth.signOut();
+  const result = await signOut(auth)
   const userCookie = useCookie('userCookie')
   userCookie.value = null
   const firebaseUser = useFirebaseUser()
   firebaseUser.value = null
   saveUserDetailInCookie(null)
-  
   const router = useRouter()
   router.replace({ name: 'login' })
   return result;
@@ -227,14 +196,17 @@ export const updateUser = async (userInfo: any) => {
       method: 'put',
       body: userInfo
     })
-    await saveUserDetailInCookie(userInfo)
-    updateUseFirebaseUserDetail(userInfo)
+    const firebaseUserDetail = useFirebaseUserDetail()
+    const newUserDetail = {
+      ...firebaseUserDetail.value,
+      ...userInfo
+    }
+    await saveUserDetailInCookie(newUserDetail)
+    updateUseFirebaseUserDetail(newUserDetail)
 
   } catch (error) {
     console.log('error', error)
   }
-
-  console.log('currentUser', auth.currentUser)
 
 }
 
@@ -256,7 +228,7 @@ export const updateUser = async (userInfo: any) => {
 // }
 
 /** 取得使用者資訊 By uid */
-export const getUserByUid = async (uid: string = ''): Promise<object> => {
+export const getUserByUid = async (uid: string): Promise<object> => {
   try {
     if (!uid) {
       throw createError({
@@ -289,7 +261,7 @@ export const saveUserDetailInCookie = async (userDetail: any) => {
   const firebaseUserDetail = useFirebaseUserDetail()
   firebaseUserDetail.value = userDetail
   const userDetailCookie = useCookie('userDetailCookie')
-  userDetailCookie.value = JSON.stringify(userDetail)
+  userDetailCookie.value = userDetail === null ? null : JSON.stringify(userDetail)
 }
 
 export const updateUseFirebaseUserDetail = (userDetail: object) => {

@@ -3,9 +3,12 @@ const nuxtApp = useNuxtApp()
 const route = useRoute()
 const account = route.params.account
 
-const { data: userDetail, pending } = await useAsyncData(`userDetail:${account}`, async () => {
+const {
+  data: userDetail,
+  pending: userDetailPending,
+} = await useAsyncData(`userDetail:${account}`, async () => {
   const currentUserDeatil = await getUserByAccount(account)
-  currentUserDeatil.profileArray = getLinesTextFromTextarea(currentUserDeatil?.profile || [])
+  currentUserDeatil.profileArray = getLinesTextFromTextarea(currentUserDeatil?.profile)
   return currentUserDeatil
 })
 
@@ -64,6 +67,9 @@ const { data: booksData, refresh: userReadBookRefresh } = await useAsyncData(`ge
   },
 })
 
+const noRecord = computed(() => {
+  return booksData.value?.readingBooks?.length + booksData.value?.readDoneBooks?.length === 0
+})
 
 const readDone = async (book) => {
   try {
@@ -100,8 +106,8 @@ const createNewRecord = () => {
 
 <template>
   <div>
-    <div class="flex md:w-3/5 mx-auto justify-center">
-      <div v-if="pending"
+    <div class="flex mb-4 md:w-3/5 mx-auto justify-center">
+      <div v-if="userDetailPending"
         class=" w-full flex justify-center py-20"
         >
         <q-circular-progress
@@ -178,6 +184,12 @@ const createNewRecord = () => {
         class=" w-full my-5 border-2 border-dotted "
         />
     </ClientOnly>
+    <div
+      v-if="noRecord"
+      class=" text-center py-10 text-gray-500"
+      >
+      目前尚未有任何閱讀紀錄
+    </div>
     <BookBlock
       v-if="booksData?.readingBooks?.length"
       :bookList="booksData?.readingBooks || []"
