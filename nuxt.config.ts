@@ -1,4 +1,7 @@
 export default defineNuxtConfig({
+  experimental: {
+    inlineRouteRules: true
+  },
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-quasar-ui',

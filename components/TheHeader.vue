@@ -54,6 +54,7 @@ const clickSignOut = async () => {
             <q-btn-dropdown
               v-if="firebaseUser"
               auto-close
+              no-caps
               stretch
               flat
               :label="firebaseUserDetail?.nickName"

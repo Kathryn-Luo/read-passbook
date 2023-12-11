@@ -19,6 +19,5 @@ export const searchFromGoogleBook = async ({
   }).catch(error => {
     console.log('error', error)
   })
-  console.log('result', result)
   return result
 }

@@ -88,6 +88,7 @@
     <q-btn
       label="註冊"
       @click="submit"
+      color="primary"
       class=" w-full mt-8"
       />
   </q-form>

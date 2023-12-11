@@ -2,6 +2,9 @@
 definePageMeta({
   middleware: ['auth'],
 })
+defineRouteRules({
+  ssr: false
+})
 const config = useRuntimeConfig()
 const submitLoading = ref(false)
 const $q = useQuasar()
@@ -9,28 +12,19 @@ const fileInput = ref(null)
 
 const firebaseUser = useFirebaseUser()
 const firebaseUserDetail = useFirebaseUserDetail()
-const firebaseUserDetailRef = ref(firebaseUserDetail)
-const userInfo = ref(config.public.defaultUserDetail)
-
-const { pending } = await useAsyncData('myUserDetail', async () => {
-  if (firebaseUserDetailRef.value) {
-    userInfo.value = JSON.parse(JSON.stringify(firebaseUserDetailRef.value))
-    return firebaseUserDetailRef.value
+const userDetail = ref(config.public.defaultUserDetail)
+if (firebaseUserDetail.value) {
+  userDetail.value = {
+    ...firebaseUserDetail.value
   }
-
-  try {
-    const firebaseUserData = await getUserDetailWaitFirebaseLoaded()
-    const userDetail = await getUserByUid(firebaseUserData?.uid)
-    saveUserDetailInCookie(userDetail)
-    userInfo.value = JSON.parse(JSON.stringify(userDetail))
-
-    return userDetail
-  } catch (error) {
-    console.log(error)
+}
+watch(firebaseUserDetail, (newUserDetail) => {
+  if (newUserDetail) {
+    userDetail.value = {
+      ...userDetail.value,
+      ...newUserDetail
+    }
   }
-}, {
-  lazy: true,
-  server: false
 })
 
 const emailIsSending = ref(null)
@@ -71,9 +65,9 @@ const submit = async () => {
     submitLoading.value = true
     await updateUser({
       uid: firebaseUser.value.uid,
-      account: userInfo.value.account,
-      nickName: userInfo.value.nickName,
-      profile: userInfo.value.profile
+      account: userDetail.value.account,
+      nickName: userDetail.value.nickName,
+      profile: userDetail.value.profile
     })
     $q.notify({
       type: 'positive',
@@ -90,7 +84,7 @@ const submit = async () => {
   }
 }
 const setUserImage = (imageUrl) => {
-  userInfo.value.image = imageUrl
+  userDetail.value.image = imageUrl
 }
 const uploadImage = async (event) => {
   const file = event.target.files?.[0]
@@ -120,7 +114,7 @@ const clickFileButton = () => {
 <template>
   <div class="text-center mb-5 ">
     <div class=" mt-3 inline-block relative">
-      <AccountAvatar :image-url="userInfo?.image" />
+      <AccountAvatar :imageUrl="userDetail.image" />
       <div
         class=" cursor-pointer absolute bottom-0 right-0"
         >
@@ -141,17 +135,7 @@ const clickFileButton = () => {
     </div>
   </div>
 
-  <div v-if="pending"
-    class=" w-full flex justify-center py-20">
-    <q-circular-progress
-      indeterminate
-      rounded
-      size="50px"
-      color="light-blue"
-      class="q-ma-md"
-    />
-  </div>
-  <div v-else>
+  <div>
     <q-form
       @submit="submit"
       ref="formRef"
@@ -162,13 +146,13 @@ const clickFileButton = () => {
         label="帳號"
         /> -->
       <ProfileField
-        v-model="userInfo.nickName"
+        v-model="userDetail.nickName"
         label="暱稱"
         placeholder="請輸入暱稱"
         @submit="submit"
         />
       <ProfileField
-        v-model="userInfo.email"
+        v-model="userDetail.email"
         label="Email"
         placeholder="請輸入Email"
         disabled
@@ -178,18 +162,18 @@ const clickFileButton = () => {
         :after-button-disabled="emailIsSending"
         @clickAfter="goVerifiedEmail"
         />
-      <ProfileField
-        v-model="userInfo.facebook"
+      <!-- <ProfileField
+        v-model="userDetail.facebook"
         label="Facebook 帳號"
         placeholder="請輸入 Facebook 帳號"
-        />
-      <ProfileField
-        v-model="userInfo.instagram"
+        /> -->
+      <!-- <ProfileField
+        v-model="userDetail.instagram"
         label="Instagram 帳號"
         placeholder="請輸入 Instagram 帳號"
-        />
+        /> -->
       <ProfileField
-        v-model="userInfo.profile"
+        v-model="userDetail.profile"
         label="個人簡介"
         placeholder="請輸入個人簡介"
         type="textarea"
