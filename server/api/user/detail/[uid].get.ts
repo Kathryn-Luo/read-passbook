@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     // @ts-ignore
     const usersCollectionRef = doc(firestoreDb, 'userDetail', uid)
     const docSnap = await getDoc(usersCollectionRef);
-    let result = null
+    let result = {}
     // FIXME: 更新資料後，重整頁面取得的資料會是舊的；清快取才會是新的資料
     if (docSnap.exists()) {
       result = docSnap.data()

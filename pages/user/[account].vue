@@ -3,9 +3,12 @@ const nuxtApp = useNuxtApp()
 const route = useRoute()
 const account = route.params.account
 
-const { data: userDetail, pending } = await useAsyncData(`userDetail:${account}`, async () => {
+const {
+  data: userDetail,
+  pending: userDetailPending,
+} = await useAsyncData(`userDetail:${account}`, async () => {
   const currentUserDeatil = await getUserByAccount(account)
-  currentUserDeatil.profileArray = getLinesTextFromTextarea(currentUserDeatil?.profile || [])
+  currentUserDeatil.profileArray = getLinesTextFromTextarea(currentUserDeatil?.profile)
   return currentUserDeatil
 })
 
@@ -101,7 +104,7 @@ const createNewRecord = () => {
 <template>
   <div>
     <div class="flex md:w-3/5 mx-auto justify-center">
-      <div v-if="pending"
+      <div v-if="userDetailPending"
         class=" w-full flex justify-center py-20"
         >
         <q-circular-progress
