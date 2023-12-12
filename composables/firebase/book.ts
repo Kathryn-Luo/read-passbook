@@ -10,6 +10,8 @@ import {
   getDoc,
   getDocs,
   deleteDoc,
+  startAfter,
+  limit,
 } from 'firebase/firestore'
 
 
@@ -157,14 +159,24 @@ export const deleteUserReadBook = async (readBookId: string) => {
   await deleteDoc(userReadBookDoc)
 }
 
-export const getRecentlyUserReadBooks = async () => {
+export const getRecentlyUserReadBooks = async ({
+  prePage = 20,
+  lastDoc
+}: any) => {
   const nuxtApp = useNuxtApp()
   const firebaseDB = nuxtApp.$firestore
   try {
     // FIXME
     // @ts-ignore
     const userReadBooksRef = collection(firebaseDB, 'userReadBooks')
-    const q = query(userReadBooksRef, orderBy('startDateTime', 'desc'));
+    const q = lastDoc
+      ? query(userReadBooksRef,
+          orderBy('startDateTime', 'desc'),
+          startAfter(lastDoc.startDateTime),
+          limit(prePage))
+      : query(userReadBooksRef,
+          orderBy('startDateTime', 'desc'),
+          limit(prePage))
     const querySnapshot = await getDocs(q)
     const userReadBooksList: any[] = []
     querySnapshot.forEach((doc) => {

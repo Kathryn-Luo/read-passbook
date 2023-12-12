@@ -256,6 +256,13 @@ export const getUserByAccount = async (account: string) => {
   }
 }
 
+export const saveUserInLocal = (user: object) => {
+  const firebaseUser = useFirebaseUser()
+  firebaseUser.value = user
+  const userCookie = useCookie('userCookie')
+  userCookie.value = user === null ? null : JSON.stringify(user)
+}
+
 /** 儲存使用者資訊至 Cookie */
 export const saveUserDetailInCookie = async (userDetail: any) => {
   const firebaseUserDetail = useFirebaseUserDetail()
