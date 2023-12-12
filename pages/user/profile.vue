@@ -10,7 +10,9 @@ const submitLoading = ref(false)
 const $q = useQuasar()
 const fileInput = ref(null)
 
-const firebaseUser = useFirebaseUser()
+const firebaseUser = await getUserDetailWaitFirebaseLoaded() // 取得最新 userData
+saveUserInLocal(firebaseUser) // 更新最新 user 資料
+
 const firebaseUserDetail = useFirebaseUserDetail()
 const userDetail = ref(config.public.defaultUserDetail)
 if (firebaseUserDetail.value) {

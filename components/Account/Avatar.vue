@@ -1,6 +1,6 @@
 <script setup>
 const props = defineProps({
-  imageUrl: String,
+  imageUrl: String | null,
   size: Number | String,
   border: Number | String
 })
@@ -8,7 +8,7 @@ const config = useRuntimeConfig()
 
 let imageSize = reactive(props.size ? props.size : 150)
 const imageIsFromFirestorge = (imageUrl) => {
-  return imageUrl.indexOf(config.public.firestoreImagePrefixUrl) > -1
+  return (imageUrl || '').indexOf(config.public.firestoreImagePrefixUrl) > -1
 }
 const image = computed(() => {
   return imageIsFromFirestorge(props.imageUrl)
