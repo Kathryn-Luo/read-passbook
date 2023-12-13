@@ -10,7 +10,7 @@ const {
   <div
     class="px-3 py-2 mb-4 group/item rounded transition duration-300 bg-zinc-100 hover:bg-zinc-300"
     >
-    <p
+    <nuxt-link
       :to="{ name: 'book-bookId', params: { bookId: book.bookId } }"
       class="flex group/book rounded text-base leading-5 transition  duration-300"
       >
@@ -43,7 +43,7 @@ const {
           {{ book.publisher }}
         </p>
       </div>
-    </p>
+    </nuxt-link>
     <div
       v-if="book.userDetail && book.userDetail.nickName"
       class="group/user mt-2 border-t border-double "
