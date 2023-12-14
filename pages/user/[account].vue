@@ -204,7 +204,7 @@ const createNewRecord = () => {
       @toggleStatus="undoReading"
       @deleteBook="deleteBook"
       title="閱讀紀錄"
-      class=" mt-5"
+      class=" mt-8"
       :canControl="isAuthor"
       />
     <AccountCreateDialog

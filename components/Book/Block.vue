@@ -58,9 +58,7 @@ const deleteBook = (book) => {
 </script>
 
 <template>
-  <div
-    class="bg-stone-100 pb-4 rounded"
-    >
+  <div>
     <BookTitle
       v-if="title"
       :title="title">
@@ -68,41 +66,13 @@ const deleteBook = (book) => {
         <slot name="innerAppred"></slot>
       </template>
     </BookTitle>
-    <li
+    <Book
       v-for="book in bookList"
       :key="book.id"
-      class="py-3 list-none px-3 flex items-center"
-      >
-      <q-icon name="las la-book" class="flex-none pr-2" />
-      <nuxt-link
-        :to="{ name: 'book-bookId', params: { bookId: book.bookId } }"
-        class=" text-base text-cyan-900 leading-5 flex-1 hover:underline"
-        >
-        {{ book.title }}
-      </nuxt-link>
-      <span
-        class=" flex-none ml-2">
-        {{ getDateFormat(book.startDateTime) }}
-      </span>
-      <div class=" pl-2" v-if="canControl">
-        <q-btn
-          @click="() => toggleStatus(book)"
-          :icon="`las ${isDone(book) ? 'la-undo' : 'la-check-circle'}`"
-          outline
-          round
-          size="sm"
-          color="primary"
-          />
-        <q-btn
-          @click="() => deleteBook(book)"
-          icon="las la-trash-alt"
-          round
-          size="sm"
-          unelevated
-          color="negative"
-          class=" ml-1"
-          />
-        </div>
-    </li>
+      :book="book"
+      :canControl="canControl"
+      @toggleStatus="toggleStatus"
+      @deleteBook="deleteBook"
+      />
   </div>
 </template>
