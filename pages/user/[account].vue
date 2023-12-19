@@ -1,7 +1,10 @@
 <script setup>
+import DOMPurify from 'dompurify'
+
 const nuxtApp = useNuxtApp()
 const route = useRoute()
 const account = route.params.account
+const $q = useQuasar()
 
 const {
   data: userDetail,
@@ -24,7 +27,7 @@ const firebaseAuthUser = await getUserDetailWaitFirebaseLoaded()
 const isAuthor = firebaseAuthUser && (userDetail?.value?.uid === firebaseAuthUser?.uid)
 
 const { data: booksData, refresh: userReadBookRefresh } = await useAsyncData(`getUserReadBooks:${account}`, async () => {
-  const result = await getUserReadBooks(userDetail?.value?.uid)
+  const result = await getUserReadBooks(userDetail?.value?.uid, isAuthor)
   const readingBooks = []
   const readDoneBooks = []
   result.forEach(book => {
@@ -89,6 +92,33 @@ const undoReading = async (book) => {
     console.log('undoReading error', error)
   }
 }
+
+const editRecordDialogOpen = ref(false)
+const editRecordData = ref({})
+const editRecord = (book) => {
+  editRecordData.value = book
+  editRecordDialogOpen.value = true
+}
+const updateRecord = async (record) => {
+  $q.loading.show()
+  const newRecord = {
+    ...record,
+    note: DOMPurify.sanitize(record.note)
+  }
+  try {
+    await updateUserReadBook(record.id, newRecord)
+    userReadBookRefresh()
+    editRecordDialogOpen.value = false
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message: '儲存失敗'
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
+
 const deleteBook = async (book) => {
   try {
     await deleteUserReadBook(book.id)
@@ -194,6 +224,7 @@ const createNewRecord = () => {
       v-if="booksData?.readingBooks?.length"
       :bookList="booksData?.readingBooks || []"
       @toggleStatus="readDone"
+      @editRecord="editRecord"
       @deleteBook="deleteBook"
       title="閱讀中"
       :canControl="isAuthor"
@@ -202,6 +233,7 @@ const createNewRecord = () => {
       v-if="booksData?.readDoneBooks?.length"
       :bookList="booksData?.readDoneBooks || []"
       @toggleStatus="undoReading"
+      @editRecord="editRecord"
       @deleteBook="deleteBook"
       title="閱讀紀錄"
       class=" mt-8"
@@ -210,6 +242,11 @@ const createNewRecord = () => {
     <AccountCreateDialog
       v-model="dialogOpen"
       @submit="() => userReadBookRefresh()"
+      />
+    <AccountBookRecordDialog
+      v-model="editRecordDialogOpen"
+      :record="editRecordData"
+      @update="updateRecord"
       />
   </div>
 </template>

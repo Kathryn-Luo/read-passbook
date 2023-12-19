@@ -61,10 +61,12 @@
       <q-infinite-scroll
         @load="onLoad"
         :offset="250">
-        <BookItemRecently
+        <Book 
           v-for="book in recentlyBookList"
           :key="book.bookId"
-          :book="book"/>
+          :book="book"
+          :show-user="true"
+          />
         <template v-slot:loading>
           <div class="row justify-center q-my-md">
             <q-spinner-dots color="primary" size="40px" />
