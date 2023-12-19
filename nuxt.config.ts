@@ -9,6 +9,9 @@ export default defineNuxtConfig({
     '@nuxt/devtools',
     'nuxt-gtag'
   ],
+  imports: {
+    dirs: ['types/*.d.ts', 'types/**/*.d.ts']
+  },
   runtimeConfig: {
     // FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
 
@@ -42,6 +45,7 @@ export default defineNuxtConfig({
     vue: {
       script: {
         defineModel: true,
+        propsDestructure: true
       }
     },
     css: {
@@ -89,8 +93,9 @@ export default defineNuxtConfig({
     config: {
       brand: {
         primary: '#0e7490'
-      }
-    }
+      },
+    },
+    lang: 'zh-TW'
   },
   nitro: {
     preset: 'firebase',

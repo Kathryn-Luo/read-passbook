@@ -1,30 +1,25 @@
 <script setup lang="ts">
-interface ReadRecordProps {
-  id: string
-  bookId: string
-  title: string
-  startDateTime: Date
-  endDateTime?: Date
-  authors?: string[]
-  publisher?: string
-  imageLinks?: any
-  updateBook?: Object
-  userDetail?: object,
-  note?: string,
-  [propName: string]: any
-}
+import {
+  date,
+} from 'quasar'
+const { formatDate } = date
 
 const {
   book,
-  canControl
+  canControl,
+  showUser
 } = defineProps({
   book: {
-    type: Object as PropType<ReadRecordProps>,
+    type: Object as PropType<ReadRecord>,
     required: true
   },
   canControl: {
     type: Boolean,
     required: false
+  },
+  showUser: {
+    type: Boolean,
+    required: false,
   }
 })
 
@@ -33,14 +28,26 @@ const emit = defineEmits([
   'editRecord',
   'deleteBook'
 ])
-const isDone = (book: ReadRecordProps): Boolean => {
+
+const getDateFormat = (date: Date, dateFormat: string = 'MM/DD') => {
+  if (!date) return ''
+  const newDateTime = date
+  if (newDateTime.getFullYear() !== new Date().getFullYear()) {
+    // 不同年份再顯示年
+    dateFormat = `${newDateTime.getFullYear()}/${dateFormat}`
+  }
+  const newDate = formatDate(newDateTime, dateFormat)
+  return newDate
+}
+
+const isDone = (book: ReadRecord): Boolean => {
   return Boolean(book.endDateTime)
 }
 
 </script>
 
 <template>
-  <div class="rounded p-2 mb-2 transition duration-300 bg-zinc-100 hover:bg-zinc-200">
+  <div class="group/book-item rounded p-2 mb-3 transition duration-300  border border-dobule border-zinc-200 bg-zinc-100 shadow shadow-zinc-300 hover:bg-zinc-300">
     <div class=" flex group/book">
       <NuxtLink
         v-if="book.imageLinks?.smallThumbnail"
@@ -50,12 +57,13 @@ const isDone = (book: ReadRecordProps): Boolean => {
             bookId: book.bookId
           }
         }"
-        class=" flex-none mr-2"
+        class=" flex-none mr-2 border border-zinc-200"
         >
         <NuxtImg
           :src="urlHttpToHttps(book.imageLinks.smallThumbnail) || urlHttpToHttps(book.imageLinks.thumbnail)"
           fit="contain"
           height="80"
+          loading="lazy"
         />
       </NuxtLink>
       <div class=" flex-1">
@@ -67,7 +75,7 @@ const isDone = (book: ReadRecordProps): Boolean => {
             }
           }"
           target="_blank"
-          class=" text-base font-bold transition duration-300 hover:underline hover:text-cyan-700">
+          class="mb-1 text-base leading-5 line-clamp-2 font-bold transition duration-300 hover:underline hover:text-cyan-700">
           {{ book.title }}
         </NuxtLink>
         <p
@@ -84,53 +92,104 @@ const isDone = (book: ReadRecordProps): Boolean => {
         </p>
       </div>
       <div
-        v-if="canControl"
         class="pl-2 flex-none">
-        <q-btn
-          @click="() => emit('toggleStatus', book)"
-          :icon="`las ${isDone(book) ? 'la-undo' : 'la-check'}`"
-          unelevated
-          outline
-          round
-          size="sm"
-          color="primary"
-          >
-          <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 5]">
-            {{ isDone(book) ? '重新閱讀' : '閱讀完畢' }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn
-          @click="() => emit('editRecord', book)"
-          icon="las la-edit"
-          outline
-          round
-          size="sm"
-          class=" ml-2"
-          >
-          <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 5]">
-            編輯
-          </q-tooltip>
-        </q-btn>
-        <q-btn
-          @click="() => emit('deleteBook', book)"
-          icon="las la-trash-alt"
-          round
-          size="sm"
-          outline
-          color="negative"
-          class=" ml-1">
-          <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 5]">
-            刪除
-          </q-tooltip>
-        </q-btn>
+        <div
+          v-if="canControl"
+          class="mb-1">
+          <q-btn
+            @click="() => emit('toggleStatus', book)"
+            :icon="`las ${isDone(book) ? 'la-undo' : 'la-check'}`"
+            unelevated
+            outline
+            round
+            size="sm"
+            color="primary"
+            >
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 5]">
+              {{ isDone(book) ? '重新閱讀' : '閱讀完畢' }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            @click="() => emit('editRecord', book)"
+            icon="las la-edit"
+            outline
+            round
+            size="sm"
+            class=" ml-2"
+            >
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 5]">
+              編輯
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            @click="() => emit('deleteBook', book)"
+            icon="las la-trash-alt"
+            round
+            size="sm"
+            outline
+            color="negative"
+            class=" ml-1">
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 5]">
+              刪除
+            </q-tooltip>
+          </q-btn>
+        </div>
+        <p
+          v-if="!showUser"
+          class="flex items-center justify-end text-gray-400 cursor-default">
+          <q-icon name="event"/>
+          <span
+            :title="`${getDateFormat(book.startDateTime, 'YYYY年MM月DD日')}${book.endDateTime ? '~' + getDateFormat(book.endDateTime, 'YYYY年MM月DD日') : ''}`">
+            {{ getDateFormat(book.startDateTime) }}{{ book.endDateTime ? `~${getDateFormat(book.endDateTime)}` : '' }}
+          </span>
+        </p>
       </div>
     </div>
     <div
-      v-if="book.note"
-      class=" mt-2 rounded-lg px-2 py-1 text-zinc-600 text-sm border-4 border-double border-zinc-300 bg-white"
+      v-if="(showUser && book.userDetail?.nickName) || !!book.note "
+      class="flex justify-end mt-2 rounded-lg px-2 py-1 text-zinc-600 text-sm border border-white bg-zinc-300/50 transition duration-300 group-hover/book-item:bg-zinc-100"
       >
-      <div>
-        {{book.note }}
+      <div
+        v-if="book.note"
+        v-dompurify-html="book.note"
+        class="flex-1 max-h-[90px] overflow-y-auto">
+      </div>
+      <div
+        v-if="showUser"
+        class="flex-none"
+        >
+        <div
+          v-if="book.userDetail && book.userDetail.nickName"
+          class="group/user"
+          >
+          <nuxt-link
+            :to="{
+              name: 'user-account',
+              params: { account: book.userDetail.account }
+            }"
+            class="flex items-end"
+            >
+            <p class=" text-right text-xs opacity-50">
+              <span
+                :title="`${getDateFormat(book.startDateTime, 'YYYY年MM月DD日')}${book.endDateTime ? '~' + getDateFormat(book.endDateTime, 'YYYY年MM月DD日') : ''}`"
+                class="flex items-center justify-end opacity-60 cursor-default"
+                >
+                {{ getDateFormat(book.startDateTime) }}{{ book.endDateTime ? `~${getDateFormat(book.endDateTime)}` : '' }}
+              </span>
+              <span class="text-bold group-hover/user:underline group-hover/user:text-cyan-700">
+                {{ book.userDetail.nickName }}
+              </span>
+              {{ book.endDateTime ? '已閱讀' : '正在閱讀' }}
+            </p>
+            <AccountAvatar
+              v-if="book.userDetail.image"
+              :image-url="book.userDetail.image"
+              size="35"
+              class="ml-1"
+              border="2"
+              />
+          </nuxt-link>
+        </div>
       </div>
     </div>
   </div>

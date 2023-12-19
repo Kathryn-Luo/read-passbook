@@ -37,6 +37,10 @@ const toggleStatus = (book) => {
   if (!canControl) return
   emit('toggleStatus', book)
 }
+const editRecord = (book) => {
+  if (!canControl) return
+  emit('editRecord', book)
+}
 const deleteBook = (book) => {
   if (!canControl) return
   $q.dialog({
@@ -72,6 +76,7 @@ const deleteBook = (book) => {
       :book="book"
       :canControl="canControl"
       @toggleStatus="toggleStatus"
+      @editRecord="editRecord"
       @deleteBook="deleteBook"
       />
   </div>

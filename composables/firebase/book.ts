@@ -94,7 +94,7 @@ export const addUserReadBooks = async (userId: string, books: object[], userDeta
   }
 }
 
-export const getUserReadBooks = async (userId: string) => {
+export const getUserReadBooks = async (userId: string, isAuth: boolean) => {
   const nuxtApp = useNuxtApp()
   const firebaseDB = nuxtApp.$firestore
 
@@ -108,10 +108,19 @@ export const getUserReadBooks = async (userId: string) => {
     const querySnapshot = await getDocs(q)
     const userReadBooksList: any[] = []
     querySnapshot.forEach((doc) => {
-      userReadBooksList.push({
+      const readRecord = {
         id: doc.id,
-        ...doc.data()
-      })
+        note: '',
+        notePublic: true,
+        ...doc.data(),
+        startDateTime: doc.data().startDateTime?.toDate(),
+        endDateTime: doc.data().endDateTime?.toDate() || null,
+      }
+      if (!isAuth && !readRecord.notePublic) {
+        // 筆記不公開
+        readRecord.note = ''
+      }
+      userReadBooksList.push(readRecord)
     })
     return userReadBooksList
   } catch (error) {
@@ -131,7 +140,7 @@ export const updateUserReadBook = async (readBookId: string, book: any) => {
 
   const updateBook = {
     ...book,
-    updateBook: getFirestoreTimestamp(book.startDateTime)
+    startDateTime: getFirestoreTimestamp(book.startDateTime),
   }
   if (book.endDateTime) {
     updateBook.endDateTime = getFirestoreTimestamp(book.endDateTime)
@@ -180,10 +189,19 @@ export const getRecentlyUserReadBooks = async ({
     const querySnapshot = await getDocs(q)
     const userReadBooksList: any[] = []
     querySnapshot.forEach((doc) => {
-      userReadBooksList.push({
+      const readRecord = {
         id: doc.id,
-        ...doc.data()
-      })
+        note: '',
+        notePublic: true,
+        ...doc.data(),
+        startDateTime: doc.data().startDateTime?.toDate(),
+        endDateTime: doc.data().endDateTime?.toDate(),
+      }
+      if (!readRecord.notePublic) {
+        // 筆記不公開
+        readRecord.note = ''
+      }
+      userReadBooksList.push(readRecord)
     })
     return userReadBooksList
   } catch (error) {
