@@ -154,8 +154,14 @@ import {
               v-model="currentRecord.note"
               max-height="100%"
               content-style="overflow-y: auto;"
-
               content-class="flex-1 overflow-auto"
+              :toolbar="[
+                ['bold', 'italic', 'strike', 'underline'],
+                ['left', 'center', 'right', 'justify'],
+                ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+                ['hr', 'code'],
+                ['undo', 'redo']
+              ]"
             />
           </label>
         </div>
