@@ -76,9 +76,9 @@ export const addUserReadBooks = async (userId: string, books: object[], userDeta
       const bookData = {
         bookId: book?.id,
         title: book?.volumeInfo?.title,
-        imageLinks: book?.volumeInfo?.imageLinks,
-        authors: book?.volumeInfo?.authors,
-        publisher: book?.volumeInfo?.publisher,
+        imageLinks: book?.volumeInfo?.imageLinks || null,
+        authors: book?.volumeInfo?.authors || null,
+        publisher: book?.volumeInfo?.publisher || null,
         startDateTime: Timestamp.fromDate(new Date()),
         userId: userId,
         userDetail: userDetail

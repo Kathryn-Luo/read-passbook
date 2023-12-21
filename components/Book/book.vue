@@ -47,7 +47,7 @@ const isDone = (book: ReadRecord): Boolean => {
 </script>
 
 <template>
-  <div class="group/book-item rounded p-2 mb-3 transition duration-300  border border-dobule border-zinc-200 bg-zinc-100 shadow shadow-zinc-300 hover:bg-zinc-300">
+  <div class="group/book-item rounded p-2 mb-3 transition duration-300  border border-dobule border-zinc-200 bg-zinc-200/70 shadow shadow-zinc-300 hover:bg-zinc-300">
     <div class=" flex group/book">
       <NuxtLink
         v-if="book.imageLinks?.smallThumbnail"
@@ -147,16 +147,16 @@ const isDone = (book: ReadRecord): Boolean => {
     </div>
     <div
       v-if="(showUser && book.userDetail?.nickName) || !!book.note "
-      class="flex justify-end mt-2 rounded-lg px-2 py-1 text-zinc-600 text-sm border border-white bg-zinc-300/50 transition duration-300 group-hover/book-item:bg-zinc-100"
+      class=" relative px-2 py-1 mt-2 justify-end items-end rounded-lg  text-zinc-600 text-sm border border-white bg-white transition duration-300 group-hover/book-item:bg-zinc-100"
       >
       <div
         v-if="book.note"
         v-dompurify-html="book.note"
-        class="flex-1 max-h-[90px] overflow-y-auto">
+        class=" max-h-[120px] overflow-y-auto pb-[40px] ">
       </div>
       <div
         v-if="showUser"
-        class="flex-none"
+        :class="`${book.note ? 'absolute right-2 bottom-1' : ''}`"
         >
         <div
           v-if="book.userDetail && book.userDetail.nickName"
@@ -167,7 +167,7 @@ const isDone = (book: ReadRecord): Boolean => {
               name: 'user-account',
               params: { account: book.userDetail.account }
             }"
-            class="flex items-end"
+            class="flex items-end justify-end"
             >
             <p class=" text-right text-xs opacity-50">
               <span
